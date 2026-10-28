@@ -1,0 +1,62 @@
+# Code-mixed slot extraction set (English / Tenglish / Hinglish), written BEFORE the normalizer existed
+# (see git history) so the normalizer is not tuned to it after the fact.
+#
+# Reference "now": Monday 2 Nov 2026, 08:00 (eval/synthetic.py EVAL_NOW).
+#   today = 2026-11-02 (Mon), tomorrow = 2026-11-03 (Tue), day after = 2026-11-04 (Wed)
+# expected: date (YYYY-MM-DD or null), time (HH:MM or null), service (key or null).
+# issue: optional flag the normalizer must raise (past_date, invalid_date, invalid_time, needs_hour, ambiguous_time).
+# Times are what the caller MEANT, even if the clinic would reject them later (e.g. 22:00, 11:15).
+# Limitation: these are typed transcripts. Real accuracy also depends on speech recognition.
+
+reference_now: "2026-11-02T08:00:00"
+
+utterances:
+  # ---------------- Tenglish ----------------
+  - {id: CM01, lang: tenglish, text: "repu sayantram 5 ki", expected: {date: "2026-11-03", time: "17:00", service: null}}
+  - {id: CM02, lang: tenglish, text: "repu poddunne 10 gantalaki consultation kavali", expected: {date: "2026-11-03", time: "10:00", service: consultation}}
+  - {id: CM03, lang: tenglish, text: "ellundi madhyanam 2 ki vaccine veyinchali", expected: {date: "2026-11-04", time: "14:00", service: vaccination}}
+  - {id: CM04, lang: tenglish, text: "ivala sayantram 4 ki slot unda", expected: {date: "2026-11-02", time: "16:00", service: null}}
+  - {id: CM05, lang: tenglish, text: "ee roju 11 ki doctor ni chudali", expected: {date: "2026-11-02", time: "11:00", service: consultation}}
+  - {id: CM06, lang: tenglish, text: "guruvaram poddunna 9 ki full body checkup", expected: {date: "2026-11-05", time: "09:00", service: full_checkup}}
+  - {id: CM07, lang: tenglish, text: "shukravaram saayantram 5 gantalaki", expected: {date: "2026-11-06", time: "17:00", service: null}}
+  - {id: CM08, lang: tenglish, text: "repu padi gantalaki", expected: {date: "2026-11-03", time: "10:00", service: null}}
+  - {id: CM09, lang: tenglish, text: "repu morning 10 ki consultation please", expected: {date: "2026-11-03", time: "10:00", service: consultation}}
+  - {id: CM10, lang: tenglish, text: "ellundi evening 4:30 ki", expected: {date: "2026-11-04", time: "16:30", service: null}}
+  - {id: CM11, lang: tenglish, text: "shanivaram 11 ki checkup", expected: {date: "2026-11-07", time: "11:00", service: consultation}}
+  - {id: CM12, lang: tenglish, text: "repu naalugunnara ki", expected: {date: "2026-11-03", time: "16:30", service: null}}
+  - {id: CM13, lang: tenglish, text: "vacche somavaram 9 ki", expected: {date: "2026-11-09", time: "09:00", service: null}}
+  - {id: CM14, lang: tenglish, text: "ninna 5 ki book chesanu", expected: {date: "2026-11-01", time: "17:00", service: null}, issue: past_date}
+  - {id: CM15, lang: tenglish, text: "repu sayantram", expected: {date: "2026-11-03", time: null, service: null}, issue: needs_hour}
+
+  # ---------------- Hinglish ----------------
+  - {id: CM16, lang: hinglish, text: "kal subah 10 baje", expected: {date: "2026-11-03", time: "10:00", service: null}}
+  - {id: CM17, lang: hinglish, text: "parso shaam ko 5 baje", expected: {date: "2026-11-04", time: "17:00", service: null}}
+  - {id: CM18, lang: hinglish, text: "aaj dopahar 2 baje consultation chahiye", expected: {date: "2026-11-02", time: "14:00", service: consultation}}
+  - {id: CM19, lang: hinglish, text: "kal saadhe das baje", expected: {date: "2026-11-03", time: "10:30", service: null}}
+  - {id: CM20, lang: hinglish, text: "kal sawa gyarah baje", expected: {date: "2026-11-03", time: "11:15", service: null}}
+  - {id: CM21, lang: hinglish, text: "parso paune paanch baje shaam ko", expected: {date: "2026-11-04", time: "16:45", service: null}}
+  - {id: CM22, lang: hinglish, text: "kal dedh baje", expected: {date: "2026-11-03", time: "13:30", service: null}}
+  - {id: CM23, lang: hinglish, text: "kal dhai baje vaccination", expected: {date: "2026-11-03", time: "14:30", service: vaccination}}
+  - {id: CM24, lang: hinglish, text: "agle somvar subah 9 baje full body checkup", expected: {date: "2026-11-09", time: "09:00", service: full_checkup}}
+  - {id: CM25, lang: hinglish, text: "budhvar ko 11 baje doctor se milna hai", expected: {date: "2026-11-04", time: "11:00", service: consultation}}
+  - {id: CM26, lang: hinglish, text: "shukravar shaam 4 baje", expected: {date: "2026-11-06", time: "16:00", service: null}}
+  - {id: CM27, lang: hinglish, text: "kal raat 8 baje", expected: {date: "2026-11-03", time: "20:00", service: null}}
+  - {id: CM28, lang: hinglish, text: "kal subah das baje appointment", expected: {date: "2026-11-03", time: "10:00", service: null}}
+  - {id: CM29, lang: hinglish, text: "aaj shaam ko", expected: {date: "2026-11-02", time: null, service: null}, issue: needs_hour}
+  - {id: CM30, lang: hinglish, text: "kal 25 baje", expected: {date: "2026-11-03", time: null, service: null}, issue: invalid_time}
+  - {id: CM31, lang: hinglish, text: "kal subah ya shaam, koi bhi", expected: {date: "2026-11-03", time: null, service: null}, issue: ambiguous_time}
+  - {id: CM32, lang: hinglish, text: "kal evening 6 baje full body checkup", expected: {date: "2026-11-03", time: "18:00", service: full_checkup}}
+
+  # ---------------- English ----------------
+  - {id: CM33, lang: english, text: "tomorrow at 10am", expected: {date: "2026-11-03", time: "10:00", service: null}}
+  - {id: CM34, lang: english, text: "day after tomorrow 4:30 pm for a vaccine", expected: {date: "2026-11-04", time: "16:30", service: vaccination}}
+  - {id: CM35, lang: english, text: "next friday morning at 9", expected: {date: "2026-11-06", time: "09:00", service: null}}
+  - {id: CM36, lang: english, text: "thursday at noon", expected: {date: "2026-11-05", time: "12:00", service: null}}
+  - {id: CM37, lang: english, text: "5th November at 3 pm consultation", expected: {date: "2026-11-05", time: "15:00", service: consultation}}
+  - {id: CM38, lang: english, text: "November 10 at 11", expected: {date: "2026-11-10", time: "11:00", service: null}}
+  - {id: CM39, lang: english, text: "today at 5", expected: {date: "2026-11-02", time: "17:00", service: null}}
+  - {id: CM40, lang: english, text: "31st November at 10am", expected: {date: null, time: "10:00", service: null}, issue: invalid_date}
+  - {id: CM41, lang: english, text: "tomorrow at 13 pm", expected: {date: "2026-11-03", time: null, service: null}, issue: invalid_time}
+  - {id: CM42, lang: english, text: "sometime next month", expected: {date: null, time: null, service: null}}
+  - {id: CM43, lang: english, text: "yesterday at 10", expected: {date: "2026-11-01", time: "10:00", service: null}, issue: past_date}
+  - {id: CM44, lang: english, text: "tomorrow afternoon 3 o'clock full checkup", expected: {date: "2026-11-03", time: "15:00", service: full_checkup}}
