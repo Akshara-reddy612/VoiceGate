@@ -4,7 +4,7 @@ A voice receptionist for small service businesses. It books appointments by voic
 
 **Core idea:** the model never sees what it isn't allowed to say. Authorization and field filtering run in code at the tool layer (the Trust Gate), *before* any tool result reaches the LLM.
 
-> Status: **Phase 1 of 7.** The booking core, Trust Gate (public tier), shared tools, offline text harness and voice wiring are in place. The live voice path has **not** been tested yet, because no LiveKit or Gemini credentials were available.
+> Status: **Phase 2 of 7.** The booking core, Trust Gate (public tier), shared tools, text harness (rule-based or Gemini), voice wiring, the eval-only baseline and 20 red-team attacks are in place. The live voice path and live Gemini evals have **not** been run yet, because no credentials were available.
 
 ## Quick start (no API keys needed)
 
@@ -14,7 +14,9 @@ python -m venv .venv
 pip install -r requirements.txt
 
 pytest                           # full test suite, fully offline
-python -m agent.text_agent       # chat with the receptionist in the terminal
+python -m agent.text_agent       # chat in the terminal (Gemini if GOOGLE_API_KEY is set, else the offline rule brain)
+python -m eval.run_all --model mock     # red-team: baseline vs VoiceGate, offline worst-case model
+python -m eval.run_all --model gemini   # same attacks with real Gemini (needs GOOGLE_API_KEY)
 ```
 
 In text mode, `/call <tool> {json}` sends a raw tool call through the gate as the current caller, for example `/call list_bookings {}`. Use it to demo blocked attempts.
