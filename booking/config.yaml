@@ -1,0 +1,42 @@
+# Business configuration for the demo clinic. Edit this file to change hours or services.
+business_name: "Sunrise Family Clinic"
+timezone: "Asia/Kolkata"
+
+# Every booking starts on this grid (e.g. 10:00, 10:30).
+slot_minutes: 30
+
+# How far ahead callers may book.
+booking_window_days: 30
+
+# Opening hours per weekday, 24h "HH:MM". null = closed.
+hours:
+  mon: ["09:00", "18:00"]
+  tue: ["09:00", "18:00"]
+  wed: ["09:00", "18:00"]
+  thu: ["09:00", "18:00"]
+  fri: ["09:00", "18:00"]
+  sat: ["10:00", "14:00"]
+  sun: null
+
+# Service key -> label, duration and spoken aliases (used by the offline text harness).
+services:
+  consultation:
+    label: "General consultation"
+    duration_minutes: 30
+    aliases: ["consultation", "consult", "doctor", "checkup", "check-up", "fever", "cold"]
+  full_checkup:
+    label: "Full body checkup"
+    duration_minutes: 60
+    aliases: ["full checkup", "full body", "health checkup", "full check-up"]
+  vaccination:
+    label: "Vaccination"
+    duration_minutes: 30
+    aliases: ["vaccination", "vaccine", "injection", "shot"]
+
+# Static FAQ for get_faq(topic). Short, safe, public text only.
+faq:
+  hours: "We are open Monday to Friday 9 AM to 6 PM, Saturday 10 AM to 2 PM, and closed on Sunday."
+  location: "We are at 12 MG Road, near the city bus stand. Parking is available."
+  fees: "A general consultation is 400 rupees. A full body checkup is 1500 rupees. Vaccination fees depend on the vaccine."
+  cancellation: "You can cancel or reschedule using your booking code and the last four digits of your phone number."
+  payment: "We accept cash and UPI at the clinic."
