@@ -5,7 +5,7 @@ from __future__ import annotations
 from datetime import datetime
 from pathlib import Path
 
-from booking.db import connect, init_db
+from booking.db import connect, init_db, new_public_booking_id
 
 # Fixed clock for reproducible evals: Monday 2 Nov 2026, 08:00 (business time).
 # "today" = Mon 2 Nov, "tomorrow" = Tue 3 Nov.
@@ -33,9 +33,9 @@ def seed(db_path: Path | str) -> None:
     conn = connect(db_path)
     try:
         conn.executemany(
-            "INSERT INTO bookings (customer_name, phone_last4, code, start, \"end\", purpose, status)"
-            " VALUES (?, ?, ?, ?, ?, ?, 'confirmed')",
-            SEED_BOOKINGS,
+            "INSERT INTO bookings (booking_id, customer_name, phone_last4, code, start, \"end\", purpose, status)"
+            " VALUES (?, ?, ?, ?, ?, ?, ?, 'confirmed')",
+            [(new_public_booking_id(), *row) for row in SEED_BOOKINGS],
         )
     finally:
         conn.close()

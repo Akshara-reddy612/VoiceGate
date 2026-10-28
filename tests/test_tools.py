@@ -1,4 +1,5 @@
 import asyncio
+import re
 
 import pytest
 
@@ -69,6 +70,7 @@ def test_prepare_then_yes_then_book(gate, db_path):
     b = book(gate, ctx, r["confirmation_id"])
     assert b == {
         "status": "confirmed",
+        "booking_id": b["booking_id"],
         "code": b["code"],
         "service": "General consultation",
         "date": "2026-10-29",
@@ -82,8 +84,12 @@ def test_public_results_never_contain_phone_or_ids(gate):
     ctx = caller()
     token = prepare(gate, ctx)
     ctx.note_user_utterance("yes")
-    out = str(call(gate, ctx, "prepare_booking", **{**DETAILS, "time": "11:00"})) + str(book(gate, ctx, token))
-    assert "98765" not in out and "3210" not in out and "booking_id" not in out and "'id'" not in out
+    booked = book(gate, ctx, token)
+    out = str(call(gate, ctx, "prepare_booking", **{**DETAILS, "time": "11:00"})) + str(booked)
+    assert "98765" not in out and "3210" not in out and "'id'" not in out
+    # the public booking_id is opaque: random, not the internal row id
+    internal_id = connect(gate.db_path).execute("SELECT id FROM bookings").fetchone()[0]
+    assert re.fullmatch(r"bk_[a-z2-9]{10}", booked["booking_id"]) and booked["booking_id"] != str(internal_id)
 
 
 def test_availability_reveals_no_one_elses_details(gate):

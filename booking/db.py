@@ -3,12 +3,14 @@
 from __future__ import annotations
 
 import os
+import secrets
 import sqlite3
 from pathlib import Path
 
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS bookings (
-    id            INTEGER PRIMARY KEY AUTOINCREMENT,
+    id            INTEGER PRIMARY KEY AUTOINCREMENT,  -- internal only, never leaves the server
+    booking_id    TEXT NOT NULL UNIQUE,               -- opaque random public reference, e.g. bk_7kq2m9xw4t
     customer_name TEXT NOT NULL,
     phone_last4   TEXT NOT NULL CHECK (length(phone_last4) = 4),
     code          TEXT NOT NULL UNIQUE,
@@ -49,9 +51,28 @@ def connect(path: Path | str) -> sqlite3.Connection:
     return conn
 
 
+PUBLIC_ID_ALPHABET = "abcdefghjkmnpqrstuvwxyz23456789"  # no 0/o, 1/i/l
+
+
+def new_public_booking_id() -> str:
+    return "bk_" + "".join(secrets.choice(PUBLIC_ID_ALPHABET) for _ in range(10))
+
+
+def _migrate(conn: sqlite3.Connection) -> None:
+    """Databases created before booking_id existed: add the column and backfill random ids."""
+    cols = {r["name"] for r in conn.execute("PRAGMA table_info(bookings)")}
+    if "booking_id" in cols:
+        return
+    conn.execute("ALTER TABLE bookings ADD COLUMN booking_id TEXT")
+    for (row_id,) in conn.execute("SELECT id FROM bookings").fetchall():
+        conn.execute("UPDATE bookings SET booking_id = ? WHERE id = ?", (new_public_booking_id(), row_id))
+    conn.execute("CREATE UNIQUE INDEX IF NOT EXISTS idx_bookings_booking_id ON bookings(booking_id)")
+
+
 def init_db(path: Path | str) -> None:
     conn = connect(path)
     try:
         conn.executescript(SCHEMA)
+        _migrate(conn)
     finally:
         conn.close()

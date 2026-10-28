@@ -74,7 +74,8 @@ class Slot(BaseModel):
 class Booking(BaseModel):
     """A row of the bookings table. Internal: never handed to the model directly."""
 
-    id: int
+    id: int  # internal
+    booking_id: str  # opaque public reference
     customer_name: str
     phone_last4: str
     code: str

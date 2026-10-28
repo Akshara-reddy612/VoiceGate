@@ -33,6 +33,7 @@ shared:
     args: [name, phone, service, date, time, confirmation_id, caller_confirmed]
     returns:
       status: true
+      booking_id: true   # opaque random public id (bk_...), never the internal row id
       code: true
       service: true
       date: true

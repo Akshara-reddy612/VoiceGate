@@ -14,7 +14,7 @@ from datetime import date, datetime, time, timedelta
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
-from booking.db import connect, init_db
+from booking.db import connect, init_db, new_public_booking_id
 from booking.models import (
     Booking,
     BookingError,
@@ -206,8 +206,21 @@ class BookingService:
     def _new_code(self) -> str:
         return "VG-" + "".join(secrets.choice(CODE_ALPHABET) for _ in range(4))
 
-    def _read_back(self, conn: sqlite3.Connection, booking_id: int) -> Booking | None:
-        row = conn.execute("SELECT * FROM bookings WHERE id = ?", (booking_id,)).fetchone()
+    def _new_booking_id(self) -> str:
+        return new_public_booking_id()
+
+    @staticmethod
+    def _unused(conn: sqlite3.Connection, column: str, make: Callable[[], str], tries: int = 10) -> str:
+        """A freshly generated value not yet present in `column` (the UNIQUE constraint is the final guard)."""
+        value = make()
+        for _ in range(tries):
+            if not conn.execute(f"SELECT 1 FROM bookings WHERE {column} = ?", (value,)).fetchone():
+                return value
+            value = make()
+        return value
+
+    def _read_back(self, conn: sqlite3.Connection, row_id: int) -> Booking | None:
+        row = conn.execute("SELECT * FROM bookings WHERE id = ?", (row_id,)).fetchone()
         return Booking.model_validate(dict(row)) if row else None
 
     def create_booking(self, req: BookingRequest) -> BookingResult:
@@ -234,16 +247,14 @@ class BookingService:
                             alternatives=self.find_alternatives(v.start, v.end - v.start),
                         ),
                     )
-                for _ in range(5):
-                    code = self._new_code()
-                    if not conn.execute("SELECT 1 FROM bookings WHERE code = ?", (code,)).fetchone():
-                        break
+                code = self._unused(conn, "code", self._new_code)
+                public_id = self._unused(conn, "booking_id", self._new_booking_id)
                 cur = conn.execute(
-                    "INSERT INTO bookings (customer_name, phone_last4, code, start, \"end\", purpose, status)"
-                    " VALUES (?, ?, ?, ?, ?, ?, 'confirmed')",
-                    (v.name, v.phone_last4, code, _iso(v.start), _iso(v.end), v.service),
+                    "INSERT INTO bookings (booking_id, customer_name, phone_last4, code, start, \"end\", purpose, status)"
+                    " VALUES (?, ?, ?, ?, ?, ?, ?, 'confirmed')",
+                    (public_id, v.name, v.phone_last4, code, _iso(v.start), _iso(v.end), v.service),
                 )
-                booking_id = cur.lastrowid
+                row_id = cur.lastrowid
                 conn.execute("COMMIT")
             except sqlite3.Error:
                 if conn.in_transaction:
@@ -252,10 +263,11 @@ class BookingService:
                     ok=False, error=BookingError(code=ErrorCode.WRITE_FAILED, message="Could not save the booking.")
                 )
 
-            saved = self._read_back(conn, booking_id)
-            expected = (v.name, v.phone_last4, code, v.start, v.end, v.service, "confirmed")
+            saved = self._read_back(conn, row_id)
+            expected = (public_id, v.name, v.phone_last4, code, v.start, v.end, v.service, "confirmed")
             if saved is None or (
-                saved.customer_name, saved.phone_last4, saved.code, saved.start, saved.end, saved.purpose, saved.status
+                saved.booking_id, saved.customer_name, saved.phone_last4, saved.code,
+                saved.start, saved.end, saved.purpose, saved.status,
             ) != expected:
                 return BookingResult(
                     ok=False,

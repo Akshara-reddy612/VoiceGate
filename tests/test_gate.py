@@ -94,7 +94,8 @@ def test_filter_drops_scalar_where_object_expected():
 
 
 def test_every_public_tool_has_a_return_allowlist_without_private_fields():
-    forbidden = {"customer_name", "phone", "phone_last4", "title", "id", "booking_id", "purpose_detail", "bookings"}
+    # "id" is the internal row id. "booking_id" (opaque, random) is allowed since the public-id change.
+    forbidden = {"customer_name", "phone", "phone_last4", "title", "id", "purpose_detail", "bookings"}
 
     def keys(spec):
         if isinstance(spec, dict):

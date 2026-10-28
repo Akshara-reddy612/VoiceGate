@@ -130,6 +130,7 @@ def build_tools(deps: ToolDeps) -> dict[str, ToolImpl]:
         b = result.booking
         return {
             "status": "confirmed",
+            "booking_id": b.booking_id,  # opaque public reference; b.id (internal row id) is never returned
             "code": b.code,
             "service": cfg.services[b.purpose].label,
             "date": _fmt_date(b.start.date()),

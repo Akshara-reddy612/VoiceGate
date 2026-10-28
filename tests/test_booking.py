@@ -1,3 +1,4 @@
+import re
 import sqlite3
 import threading
 from datetime import date, datetime
@@ -182,3 +183,67 @@ def test_db_error_during_write_is_reported(svc, monkeypatch):
     monkeypatch.setattr(BookingService, "_new_code", broken)
     r = svc.create_booking(req())
     assert not r.ok and r.error.code == ErrorCode.WRITE_FAILED
+
+
+# ---------- opaque public booking_id ----------
+
+
+def _fill_day(svc, day="2026-10-29"):
+    out = []
+    for h in range(9, 18):
+        for m in ("00", "30"):
+            r = svc.create_booking(req(name=f"Caller {h}{m}", date=day, time=f"{h:02d}:{m}"))
+            assert r.ok, r.error
+            out.append(r.booking)
+    return out
+
+
+def test_public_booking_ids_are_unique_opaque_and_not_sequential(svc):
+    made = _fill_day(svc) + _fill_day(svc, "2026-10-30")
+    ids = [b.booking_id for b in made]
+    assert len(ids) == len(set(ids)) == 36
+    assert all(re.fullmatch(r"bk_[a-z2-9]{10}", i) for i in ids)
+    assert ids != sorted(ids)  # random, not monotonic
+
+
+def test_booking_id_collision_is_retried(svc, monkeypatch):
+    first = svc.create_booking(req()).booking
+    seq = iter([first.booking_id, first.booking_id, "bk_freshvalue"])
+    monkeypatch.setattr(svc, "_new_booking_id", lambda: next(seq))
+    second = svc.create_booking(req(time="11:00"))
+    assert second.ok and second.booking.booking_id == "bk_freshvalue"
+
+
+def test_booking_id_is_unique_in_schema(svc, db_path):
+    b = svc.create_booking(req()).booking
+    with pytest.raises(sqlite3.IntegrityError):
+        connect(db_path).execute(
+            "INSERT INTO bookings (booking_id, customer_name, phone_last4, code, start, \"end\", purpose)"
+            " VALUES (?, 'X', '1111', 'VG-ZZZZ', 'a', 'b', 'consultation')",
+            (b.booking_id,),
+        )
+
+
+def test_read_back_checks_booking_id(svc, monkeypatch):
+    real = svc._read_back
+    monkeypatch.setattr(svc, "_read_back", lambda conn, rid: real(conn, rid).model_copy(update={"booking_id": "bk_other"}))
+    assert svc.create_booking(req()).error.code == ErrorCode.WRITE_NOT_VERIFIED
+
+
+def test_old_database_is_migrated_with_random_booking_ids(tmp_path):
+    db = tmp_path / "old.db"
+    conn = sqlite3.connect(db)
+    conn.executescript(
+        "CREATE TABLE bookings (id INTEGER PRIMARY KEY AUTOINCREMENT, customer_name TEXT NOT NULL,"
+        " phone_last4 TEXT NOT NULL, code TEXT NOT NULL UNIQUE, start TEXT NOT NULL, \"end\" TEXT NOT NULL,"
+        " purpose TEXT NOT NULL, status TEXT NOT NULL DEFAULT 'confirmed');"
+        "INSERT INTO bookings (customer_name, phone_last4, code, start, \"end\", purpose)"
+        " VALUES ('Old One', '1111', 'VG-OLD1', '2026-10-29T09:00:00', '2026-10-29T09:30:00', 'consultation'),"
+        "        ('Old Two', '2222', 'VG-OLD2', '2026-10-29T09:30:00', '2026-10-29T10:00:00', 'consultation');"
+    )
+    conn.commit()
+    conn.close()
+    svc = BookingService(db, clock=lambda: NOW)  # runs init_db -> migration
+    ids = [r[0] for r in connect(db).execute("SELECT booking_id FROM bookings")]
+    assert len(set(ids)) == 2 and all(i.startswith("bk_") for i in ids)
+    assert svc.create_booking(req(time="10:00")).ok  # old DB keeps working
