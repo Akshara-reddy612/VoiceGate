@@ -20,6 +20,8 @@ from datetime import date, datetime, time, timedelta
 from pathlib import Path
 from typing import Any
 
+from agent.llm_loop import ChatModel, Conversation, ExecResult, ToolCallRecord, run_turn
+from agent.prompts import build_instructions
 from agent.tools import build_gate
 from booking.confirm import is_affirmative, is_negative
 from booking.db import default_db_path
@@ -153,15 +155,6 @@ def extract_name(text: str, bare_ok: bool = False) -> str | None:
 
 
 # ---------------------------------------------------------------- agent
-
-
-@dataclass
-class ToolCallRecord:
-    tool: str
-    args: dict[str, Any]  # redacted
-    result: dict[str, Any]  # exactly what the model/brain saw
-    blocked: bool
-    reason: str
 
 
 @dataclass
@@ -331,22 +324,60 @@ class TextAgent:
             self.slots.pop(f, None)
 
 
+class LLMTextAgent:
+    """Text mode driven by a real (or mocked) LLM. Same prompt, tool schemas and Trust Gate as voice.
+
+    The only thing the model ever receives from a tool is GateResult.result (allowlisted).
+    """
+
+    def __init__(self, gate: TrustGate, ctx: CallContext, service: BookingService, model: ChatModel) -> None:
+        from agent.agent import tool_schemas  # deferred: imports livekit
+
+        self.gate = gate
+        self.ctx = ctx
+        self.cfg = service.config
+        self.model = model
+        self.convo = Conversation(system=build_instructions(self.cfg, service.now().date()), tools=tool_schemas())
+
+    def greeting(self) -> str:
+        return f"Hello, this is the {self.cfg.business_name} assistant. How can I help you?"
+
+    async def _execute(self, tool: str, args: dict[str, Any]) -> ExecResult:
+        r = await self.gate.call(self.ctx, tool, args)
+        return ExecResult(result=r.result, display_args=r.args, blocked=r.blocked, reason=r.reason)
+
+    async def turn(self, text: str) -> TurnResult:
+        self.ctx.note_user_utterance(text)
+        reply, records = await run_turn(self.model, self.convo, self._execute, text)
+        return TurnResult(reply, records)
+
+
 def build_text_agent(
     db_path: Path | str,
     tier: Tier = Tier.PUBLIC,
     service: BookingService | None = None,
     gate: TrustGate | None = None,
     session_id: str | None = None,
-) -> TextAgent:
+    model: ChatModel | None = None,
+) -> TextAgent | LLMTextAgent:
+    """model=None -> offline RuleBrain agent; otherwise an LLM-driven agent through the same gate."""
     service = service or BookingService(db_path)
     gate = gate or build_gate(db_path, service=service)
     ctx = CallContext(session_id=session_id or uuid.uuid4().hex, tier=tier, channel=Channel.TEXT)
+    if model is not None:
+        return LLMTextAgent(gate, ctx, service, model)
     return TextAgent(gate, ctx, service)
 
 
-async def _repl(db_path: Path, tier: Tier) -> None:
-    agent = build_text_agent(db_path, tier)
-    print(f"[VoiceGate text mode | tier={tier} | db={db_path} | offline rule brain]")
+async def _repl(db_path: Path, tier: Tier, brain: str) -> None:
+    model = None
+    if brain == "gemini":
+        from agent.llm_loop import GeminiChatModel
+
+        model = GeminiChatModel()
+    agent = build_text_agent(db_path, tier, model=model)
+    label = f"gemini ({model.name})" if model else "offline rule brain"
+    print(f"[VoiceGate text mode | tier={tier} | db={db_path} | {label}]")
     print("agent>", agent.greeting())
     while True:
         try:
@@ -370,8 +401,16 @@ def main() -> None:
     p.add_argument("--db", type=Path, default=default_db_path())
     p.add_argument("--tier", choices=[Tier.PUBLIC.value, Tier.OWNER.value], default=Tier.PUBLIC.value,
                    help="owner is accepted only to demonstrate that the gate refuses it on caller channels")
+    p.add_argument("--brain", choices=["auto", "rules", "gemini"], default="auto",
+                   help="auto = gemini if GOOGLE_API_KEY is set, else the offline rule brain")
     a = p.parse_args()
-    asyncio.run(_repl(a.db, Tier(a.tier)))
+    from dotenv import load_dotenv
+
+    from agent.llm_loop import gemini_configured
+
+    load_dotenv()
+    brain = a.brain if a.brain != "auto" else ("gemini" if gemini_configured() else "rules")
+    asyncio.run(_repl(a.db, Tier(a.tier), brain))
 
 
 if __name__ == "__main__":

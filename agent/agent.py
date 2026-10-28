@@ -112,6 +112,14 @@ class VoiceGateAgent(Agent):
         return await self._through_gate("get_faq", {"topic": topic})
 
 
+def tool_schemas() -> list[dict[str, Any]]:
+    """Provider-neutral schemas of the tools above, so LLM text mode offers the model exactly the voice tools."""
+    from livekit.agents.llm.utils import build_legacy_openai_schema
+
+    probe = VoiceGateAgent(gate=None, call=None, instructions="schema probe")  # type: ignore[arg-type]
+    return [build_legacy_openai_schema(t)["function"] for t in probe.tools]
+
+
 server = AgentServer()
 _service: BookingService | None = None
 _gate: TrustGate | None = None

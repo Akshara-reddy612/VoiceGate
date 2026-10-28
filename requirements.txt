@@ -1,4 +1,6 @@
 livekit-agents[google]==1.8.9
+# Gemini SDK (already pulled in by the LiveKit Google plugin); used directly by LLM text mode.
+google-genai==2.33.0
 fastapi==0.162.0
 pydantic==2.14.1
 PyYAML==6.0.3
