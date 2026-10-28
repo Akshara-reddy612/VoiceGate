@@ -1,0 +1,19 @@
+# secrets
+.env
+.env.local
+
+# python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# data
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+
+# node
+node_modules/
+dashboard/dist/
