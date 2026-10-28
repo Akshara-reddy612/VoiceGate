@@ -20,6 +20,7 @@ from datetime import date, datetime, time, timedelta
 from pathlib import Path
 from typing import Any
 
+from agent.normalizer import NEXT_WEEK_RE as NEXT_WEEK_WORDS
 from agent.normalizer import normalize
 from agent.llm_loop import ChatModel, Conversation, ExecResult, ToolCallRecord, run_turn
 from agent.prompts import build_instructions
@@ -202,6 +203,9 @@ class TextAgent:
         self.pending: str | None = None  # confirmation_id awaiting yes/no
         self.asked: str | None = None
         self.part_hint: str | None = None  # "evening" when the caller said a part of day but no hour
+        self.time_unclear = False  # caller offered several times ("5 or 6"): ask which one
+        self.time_options: list[time] = []
+        self.next_week_pending = False  # caller said "next week" without a day
         # customer flow
         self.creds: dict[str, str] = {}  # code / phone_last4 as given by the caller
         self.verified: dict[str, Any] | None = None  # caller's own booking, from verify_booking
@@ -249,11 +253,23 @@ class TextAgent:
         if phone:
             found["phone"] = phone
         today = self.service.now().date()
+        if self.next_week_pending and not NEXT_WEEK_WORDS.search(rest.lower()):
+            rest = "next week " + rest  # caller is answering "which day next week?"
         n = normalize(rest, today, self.cfg)
-        if d := n.date or extract_date(rest, today):
+        unclear = False
+        if "needs_day" in n.issues:
+            self.slots.pop("date", None)
+            self.next_week_pending, unclear = True, True
+        elif d := n.date or extract_date(rest, today):
             found["date"] = d.isoformat()
-        if t := n.time or extract_time(rest, bare_number_ok=self.asked == "time"):
+            self.next_week_pending = False
+        if "ambiguous_time" in n.issues:
+            # Never pick one of several times: forget any earlier time and ask.
+            self.slots.pop("time", None)
+            self.time_unclear, self.time_options, unclear = True, n.candidates, True
+        elif t := n.time or extract_time(rest, bare_number_ok=self.asked == "time"):
             found["time"] = t.strftime("%H:%M")
+            self.time_unclear, self.time_options = False, []
         if "time" not in found and "needs_hour" in n.issues:
             self.part_hint = n.part_of_day
         if s := n.service or extract_service(rest, self.cfg):
@@ -261,7 +277,7 @@ class TextAgent:
         if n := extract_name(rest, bare_ok=self.asked == "name" and not found):
             found["name"] = n
         self.slots.update(found)
-        return bool(found)
+        return bool(found) or unclear
 
     async def _respond(self, text: str) -> str:
         low = text.lower()
@@ -309,6 +325,13 @@ class TextAgent:
         missing = [f for f in FIELDS if f not in self.slots]
         if missing:
             self.asked = missing[0]
+            if missing[0] == "date" and self.next_week_pending:
+                return "Which day next week would you like?"
+            if missing[0] == "time" and self.time_unclear:
+                if len(self.time_options) > 1:
+                    options = " or ".join(_speak_time(t.strftime("%H:%M")) for t in self.time_options)
+                    return f"Did you mean {options}? Please pick one."
+                return "Please tell me one exact time."
             if missing[0] == "time" and self.part_hint:
                 return f"What time in the {self.part_hint}?"
             services = ", ".join(s.label for s in self.cfg.services.values())

@@ -33,6 +33,8 @@ class ErrorCode(StrEnum):
     VERIFY_FAILED = "VERIFY_FAILED"
     VERIFY_LOCKED = "VERIFY_LOCKED"
     NOT_ACTIVE = "NOT_ACTIVE"
+    AMBIGUOUS_TIME = "AMBIGUOUS_TIME"
+    AMBIGUOUS_DATE = "AMBIGUOUS_DATE"
 
 
 class ServiceConfig(BaseModel):

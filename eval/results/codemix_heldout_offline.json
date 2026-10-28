@@ -2,16 +2,16 @@
   "suite": "codemix",
   "measured_with": "rule-based normalizer on typed text (offline, no ASR)",
   "total": 20,
-  "correct": 8,
-  "accuracy": 0.4,
+  "correct": 10,
+  "accuracy": 0.5,
   "by_lang": {
-    "tenglish": 0.571,
+    "tenglish": 0.714,
     "hinglish": 0.571,
-    "english": 0.0
+    "english": 0.167
   },
   "field_accuracy": {
-    "date": 0.7,
-    "time": 0.7,
+    "date": 0.75,
+    "time": 0.75,
     "service": 0.9
   },
   "failures": [
@@ -27,30 +27,6 @@
       "got": {
         "date": null,
         "time": "10:00",
-        "service": null
-      },
-      "expected_issue": null,
-      "issues": [],
-      "fields_ok": {
-        "date": false,
-        "time": true,
-        "service": true
-      },
-      "issue_ok": true,
-      "correct": false
-    },
-    {
-      "id": "HO04",
-      "lang": "tenglish",
-      "text": "next week tuesday morning 9 ki",
-      "expected": {
-        "date": "2026-11-10",
-        "time": "09:00",
-        "service": null
-      },
-      "got": {
-        "date": "2026-11-03",
-        "time": "09:00",
         "service": null
       },
       "expected_issue": null,
@@ -126,7 +102,9 @@
         "service": null
       },
       "expected_issue": null,
-      "issues": [],
+      "issues": [
+        "needs_day"
+      ],
       "fields_ok": {
         "date": false,
         "time": true,
@@ -285,30 +263,6 @@
         "service": true
       },
       "issue_ok": true,
-      "correct": false
-    },
-    {
-      "id": "HO20",
-      "lang": "english",
-      "text": "tomorrow 5pm or 6pm whichever is free",
-      "expected": {
-        "date": "2026-11-03",
-        "time": null,
-        "service": null
-      },
-      "got": {
-        "date": "2026-11-03",
-        "time": "17:00",
-        "service": null
-      },
-      "expected_issue": "ambiguous_time",
-      "issues": [],
-      "fields_ok": {
-        "date": true,
-        "time": false,
-        "service": true
-      },
-      "issue_ok": false,
       "correct": false
     }
   ]

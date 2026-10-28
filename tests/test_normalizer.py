@@ -79,3 +79,48 @@ def test_morning_keeps_small_hours_and_evening_lifts_them():
     assert normalize("subah 7 baje", TODAY).time == time(7, 0)
     assert normalize("shaam 7 baje", TODAY).time == time(19, 0)
     assert normalize("7 baje", TODAY).time == time(19, 0)  # clinic default: 1-7 without a part of day = PM
+
+
+# ---------- ambiguity must ask, never guess (phrasings deliberately differ from the held-out file) ----------
+
+
+@pytest.mark.parametrize(
+    "text, expected_date",
+    [
+        ("next week wednesday at 10am", date(2026, 11, 11)),
+        ("agle hafte shukravar 11 baje", date(2026, 11, 13)),
+        ("vacche vaaram guruvaram 9 ki", date(2026, 11, 12)),
+        ("next week monday", date(2026, 11, 9)),
+    ],
+)
+def test_next_week_weekday_is_in_the_following_week(text, expected_date):
+    assert normalize(text, TODAY).date == expected_date
+
+
+def test_next_week_without_day_asks_for_day():
+    n = normalize("sometime next week at 10am", TODAY)
+    assert n.date is None and "needs_day" in n.issues
+
+
+@pytest.mark.parametrize(
+    "text",
+    ["kal 4 ya 5 baje", "11am or 12 noon tomorrow", "repu 10 leda 11 ki", "between 3 and 4 on friday",
+     "tomorrow at 10:30 or 11:30", "kal subah 9 baje, nahi toh shaam 5 baje"],
+)
+def test_several_times_are_ambiguous_not_guessed(text):
+    n = normalize(text, TODAY)
+    assert n.time is None and "ambiguous_time" in n.issues
+
+
+def test_ambiguous_candidates_listed_when_known():
+    n = normalize("tomorrow 11am or 12 noon", TODAY)
+    assert n.candidates == [time(11, 0), time(12, 0)]
+
+
+def test_one_time_said_twice_is_not_ambiguous():
+    assert normalize("10am, yes 10am tomorrow", TODAY).time == time(10, 0)
+
+
+def test_minutes_with_meridiem_read_once():
+    n = normalize("4:30 pm", TODAY)
+    assert n.time == time(16, 30) and n.issues == []

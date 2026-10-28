@@ -271,3 +271,24 @@ def test_wrong_last4_gives_generic_message_and_no_details(db_path, svc):
     r = say(a, f"cancel {code}, last four 0000")
     assert r.reply == "That booking code and phone number don't match our records." and r.blocked
     assert "Sita" not in r.reply and "10:00" not in r.reply
+
+
+def test_two_times_trigger_clarification_not_a_guess(agent, db_path):
+    r = say(agent, "book consultation tomorrow 11am or 12 noon, my name is Ravi, 9876543210")
+    assert r.reply == "Did you mean 11:00 AM or 12:00 PM? Please pick one." and not r.tool_calls
+    r = say(agent, "12 noon")
+    assert "12:00 PM" in r.reply and r.reply.endswith("Shall I confirm this booking?")
+
+
+def test_alternative_offered_at_read_back_reopens_question(agent, db_path):
+    say(agent, "book consultation tomorrow 10am, my name is Ravi, 9876543210")
+    r = say(agent, "actually 4 ya 5 baje")
+    # only "5 baje" is a full time expression, so it asks generically rather than listing both options
+    assert r.reply == "Please tell me one exact time." and not r.tool_calls and bookings(db_path) == []
+
+
+def test_next_week_without_day_asks_which_day(agent):
+    r = say(agent, "consultation next week at 10am, I'm Ravi, 9876543210")
+    assert r.reply == "Which day next week would you like?"
+    r = say(agent, "wednesday")
+    assert "Wednesday 4 November" in r.reply  # next week relative to Wed 28 Oct, not tomorrow-ish

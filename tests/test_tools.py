@@ -281,3 +281,12 @@ def test_action_word_is_not_a_no_when_confirming_that_action():
     assert not is_affirmative("yes cancel it")
     assert is_affirmative("yes cancel it", frozenset({"cancel"}))
     assert not is_affirmative("no, don't cancel", frozenset({"cancel"}))
+
+
+def test_prepare_booking_asks_instead_of_guessing(gate, db_path):
+    ctx = caller()
+    r = call(gate, ctx, "prepare_booking", **{**DETAILS, "time": "11am or 12 noon"})
+    assert r["error"]["code"] == "AMBIGUOUS_TIME" and "11:00 AM or 12:00 PM" in r["error"]["message"]
+    r = call(gate, ctx, "prepare_booking", **{**DETAILS, "date": "next week"})
+    assert r["error"]["code"] == "AMBIGUOUS_DATE"
+    assert booking_count(db_path) == 0

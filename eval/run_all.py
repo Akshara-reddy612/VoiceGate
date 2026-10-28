@@ -92,7 +92,7 @@ def main() -> int:
         reports["codemix"] = r = run_codemix(CODEMIX_PATH)
         print_codemix("main set, written before normalizer", r)
         reports["codemix_heldout"] = r = run_codemix(HELDOUT_PATH)
-        print_codemix("held-out set, never tuned against", r)
+        print_codemix("held-out set; only HO04+HO20 were targeted, on explicit user request", r)
 
     mode = "offline" if a.model == "mock" else "live_gemini"
     for name, report in reports.items():

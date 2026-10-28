@@ -13,7 +13,7 @@ from datetime import date, datetime, time
 from pathlib import Path
 from typing import Any
 
-from agent.normalizer import coerce_date, coerce_time
+from agent.normalizer import coerce_date, coerce_time, normalize
 from booking.confirm import ConfirmationStore, VerificationLimiter, is_affirmative
 from booking.models import Booking, BookingError, BookingRequest, ErrorCode, Slot
 from booking.service import BookingService, normalize_phone
@@ -65,6 +65,19 @@ def _request(args: dict[str, Any], today: date) -> BookingRequest:
     return BookingRequest(**vals)
 
 
+def _ambiguity(date_value: Any, time_value: Any, today: date) -> dict[str, Any] | None:
+    """Ask the caller to choose instead of guessing ("5pm or 6pm", "next week" with no day)."""
+    if date_value and "needs_day" in normalize(str(date_value), today).issues:
+        return _fail(ErrorCode.AMBIGUOUS_DATE, "Which day next week would you like?")
+    if time_value:
+        n = normalize(str(time_value), today)
+        if "ambiguous_time" in n.issues:
+            options = " or ".join(t.strftime("%I:%M %p").lstrip("0") for t in n.candidates)
+            ask = f"Did you mean {options}? Please pick one time." if len(n.candidates) > 1 else "Please pick one exact time."
+            return _fail(ErrorCode.AMBIGUOUS_TIME, ask)
+    return None
+
+
 def build_tools(deps: ToolDeps) -> dict[str, ToolImpl]:
     svc, store, cfg, limiter = deps.service, deps.confirmations, deps.service.config, deps.limiter
 
@@ -91,6 +104,8 @@ def build_tools(deps: ToolDeps) -> dict[str, ToolImpl]:
         }
 
     async def prepare_booking(ctx: CallContext, args: dict[str, Any]) -> dict[str, Any]:
+        if unclear := _ambiguity(args.get("date"), args.get("time"), svc.now().date()):
+            return unclear
         v = svc.validate(_request(args, svc.now().date()))
         if isinstance(v, BookingError):
             return _error(v)
@@ -222,6 +237,8 @@ def build_tools(deps: ToolDeps) -> dict[str, ToolImpl]:
         if b.status != "confirmed":
             return _fail(ErrorCode.NOT_ACTIVE, "That booking is no longer active.")
         today = svc.now().date()
+        if unclear := _ambiguity(args.get("new_date"), args.get("new_time"), today):
+            return unclear
         try:
             new_start = datetime.combine(
                 date.fromisoformat(coerce_date(str(args.get("new_date") or ""), today)),

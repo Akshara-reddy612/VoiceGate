@@ -44,6 +44,13 @@ for idx, names in enumerate([
         WEEKDAY_WORDS[n] = idx
 
 MONTHS = ("jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec")
+# "next week" in English / Hindi / Telugu (a weekday is still needed to pick the day).
+NEXT_WEEK_RE = re.compile(r"\b(next week|agle hafte|agle hafta|agla hafta|vacche vaaram|vachhe vaaram|vache varam|vacche varam)\b")
+# Two times offered as alternatives: "5 or 6", "5pm ya 6pm", "between 5 and 6".
+TIME_ALTERNATIVES_RE = re.compile(
+    r"\b\d{1,2}(?::\d{2})?\s*(?:a\.?m\.?|p\.?m\.?)?\s*(?:or|ya|leda|ledha|/)\s*\d{1,2}\b"
+    r"|\bbetween\s+\d{1,2}(?::\d{2})?\s*(?:a\.?m\.?|p\.?m\.?)?\s+and\s+\d{1,2}\b"
+)
 
 PARTS_OF_DAY: dict[str, str] = {
     "morning": "morning", "subah": "morning", "subha": "morning", "savere": "morning",
@@ -78,6 +85,7 @@ class Normalized:
     service: str | None = None
     part_of_day: str | None = None
     issues: list[str] = field(default_factory=list)
+    candidates: list[time] = field(default_factory=list)  # the options, when issues has ambiguous_time
 
 
 def _num(token: str) -> int:
@@ -114,6 +122,15 @@ def extract_date(t: str, today: date, issues: list[str]) -> date | None:
             issues.append("invalid_date")
             return None
         return d if d >= today else d.replace(year=today.year + 1)
+
+    if NEXT_WEEK_RE.search(t):
+        # "next week tuesday" = the Tuesday of the following calendar week, never this week's.
+        day = next((WEEKDAY_WORDS[w] for w in t.split() if w in WEEKDAY_WORDS), None)
+        if day is None:
+            issues.append("needs_day")
+            return None
+        next_monday = today + timedelta(days=7 - today.weekday())
+        return next_monday + timedelta(days=day)
 
     for phrase, offset in MULTIWORD_DAYS.items():
         if re.search(rf"\b{phrase}\b", t):
@@ -175,37 +192,53 @@ def _telugu_and_half(word: str) -> int | None:
     return None
 
 
-def extract_time(t: str, part: str | None, issues: list[str]) -> time | None:
-    t = re.sub(r"\b\d{4}-\d{2}-\d{2}\b", " ", t)
+def time_candidates(t: str, part: str | None, issues: list[str]) -> list[time | None]:
+    """Every time expression in the text, most specific pattern first. Matched text is blanked out so one
+    phrase is never read twice ("4:30 pm" is one time, not 4:30 and "30 pm"). None = an invalid time."""
+    work = re.sub(r"\b\d{4}-\d{2}-\d{2}\b", " ", t)
+    found: list[time | None] = []
     mer = r"\s*(a\.?m\.?|p\.?m\.?)?"
-    if m := re.search(r"\b(\d{1,2}):(\d{2})" + mer, t):
-        return _make(int(m[1]), int(m[2]), part, m[3], issues)
-    if m := re.search(r"\b(\d{1,2})\s*(a\.?m\.?|p\.?m\.?)(?!\w)", t):
-        return _make(int(m[1]), 0, part, m[2], issues)
-    if re.search(r"\bnoon\b|\bmidday\b", t):
-        return time(12, 0)
-    # Hindi fractions: saadhe N = N:30, sawa N = N:15, paune N = (N-1):45, dedh = 1:30, dhai = 2:30
-    if m := re.search(r"\b(saadhe|sadhe|saade|sade)\s+" + NUM + r"\b", t):
-        return _make(_num(m[2]), 30, part, None, issues)
-    if m := re.search(r"\b(sawa|sava)\s+" + NUM + r"\b", t):
-        return _make(_num(m[2]), 15, part, None, issues)
-    if m := re.search(r"\b(paune|pone)\s+" + NUM + r"\b", t):
-        return _make(_num(m[2]) - 1, 45, part, None, issues)
-    if re.search(r"\b(dedh|derh)\b", t):
-        return _make(1, 30, part, None, issues)
-    if re.search(r"\b(dhai|dhaai|adhai|dhaee)\b", t):
-        return _make(2, 30, part, None, issues)
-    for word in t.split():
-        if (h := _telugu_and_half(word)) is not None:
-            return _make(h, 30, part, None, issues)
-    if m := re.search(r"\b" + NUM + r"\s*" + OCLOCK + r"\b", t):
-        return _make(_num(m[1]), 0, part, None, issues)
-    if m := re.search(r"\b(?:at|@)\s*(\d{1,2})\b(?![:/-]|\s*(?:st|nd|rd|th)\b|\s+(?:" + "|".join(MONTHS) + "))", t):
-        return _make(int(m[1]), 0, part, None, issues)
     part_words = "|".join(sorted(PARTS_OF_DAY, key=len, reverse=True))
-    if m := re.search(r"\b(?:" + part_words + r")\s+(?:ko\s+)?(\d{1,2})\b(?!\s*(?:st|nd|rd|th)\b)", t):
-        return _make(int(m[1]), 0, part, None, issues)
-    return None
+    patterns = [
+        (r"\b(\d{1,2}):(\d{2})" + mer, lambda m: _make(int(m[1]), int(m[2]), part, m[3], issues)),
+        (r"\b(\d{1,2})\s*(a\.?m\.?|p\.?m\.?)(?!\w)", lambda m: _make(int(m[1]), 0, part, m[2], issues)),
+        (r"\b(?:12\s+)?(?:noon|midday)\b", lambda m: time(12, 0)),
+        # Hindi fractions: saadhe N = N:30, sawa N = N:15, paune N = (N-1):45, dedh = 1:30, dhai = 2:30
+        (r"\b(?:saadhe|sadhe|saade|sade)\s+" + NUM + r"\b", lambda m: _make(_num(m[1]), 30, part, None, issues)),
+        (r"\b(?:sawa|sava)\s+" + NUM + r"\b", lambda m: _make(_num(m[1]), 15, part, None, issues)),
+        (r"\b(?:paune|pone)\s+" + NUM + r"\b", lambda m: _make(_num(m[1]) - 1, 45, part, None, issues)),
+        (r"\b(?:dedh|derh)\b", lambda m: _make(1, 30, part, None, issues)),
+        (r"\b(?:dhai|dhaai|adhai|dhaee)\b", lambda m: _make(2, 30, part, None, issues)),
+        (r"\b\w+nnara\b", lambda m: _make(h, 30, part, None, issues) if (h := _telugu_and_half(m[0])) is not None else "skip"),
+        (r"\b" + NUM + r"\s*" + OCLOCK + r"\b", lambda m: _make(_num(m[1]), 0, part, None, issues)),
+        (r"\b(?:at|@)\s*(\d{1,2})\b(?![:/-]|\s*(?:st|nd|rd|th)\b|\s+(?:" + "|".join(MONTHS) + "))",
+         lambda m: _make(int(m[1]), 0, part, None, issues)),
+        (r"\b(?:" + part_words + r")\s+(?:ko\s+)?(\d{1,2})\b(?!\s*(?:st|nd|rd|th)\b)",
+         lambda m: _make(int(m[1]), 0, part, None, issues)),
+    ]
+    for pattern, make in patterns:
+        def take(m: re.Match) -> str:
+            value = make(m)
+            if value == "skip":
+                return m[0]
+            found.append(value)
+            return " " * len(m[0])
+
+        work = re.sub(pattern, take, work)
+    return found
+
+
+def extract_time(t: str, part: str | None, issues: list[str]) -> time | None:
+    """One unambiguous time, or None. Two different times ("5pm or 6pm") -> ambiguous_time, never a guess."""
+    cands = time_candidates(t, part, issues)
+    if any(c is None for c in cands):
+        return None  # invalid_time already recorded
+    distinct = list(dict.fromkeys(cands))
+    if len(distinct) > 1 or TIME_ALTERNATIVES_RE.search(t):
+        if "ambiguous_time" not in issues:
+            issues.append("ambiguous_time")
+        return None
+    return distinct[0] if distinct else None
 
 
 def extract_part_of_day(t: str, issues: list[str]) -> str | None:
@@ -241,11 +274,17 @@ def normalize(text: str, today: date, cfg: BusinessConfig | None = None) -> Norm
     part = extract_part_of_day(t, issues)
     ambiguous = "ambiguous_time" in issues
     d = extract_date(t, today, issues)
-    tm = None if ambiguous else extract_time(t, part, issues)
-    if tm is None and part and not ambiguous and "invalid_time" not in issues:
+    candidates: list[time] = []
+    if ambiguous:
+        tm = None
+    else:
+        tm = extract_time(t, part, issues)
+        if "ambiguous_time" in issues:
+            candidates = list(dict.fromkeys(c for c in time_candidates(t, part, []) if c))
+    if tm is None and part and "ambiguous_time" not in issues and "invalid_time" not in issues:
         issues.append("needs_hour")
     service = match_service(t, cfg) if cfg else None
-    return Normalized(date=d, time=tm, service=service, part_of_day=part, issues=issues)
+    return Normalized(date=d, time=tm, service=service, part_of_day=part, issues=issues, candidates=candidates)
 
 
 def coerce_date(value: str, today: date) -> str:
