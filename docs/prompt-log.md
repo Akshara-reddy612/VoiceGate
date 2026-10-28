@@ -37,3 +37,11 @@ This is a record of the major prompts given to the AI pair-programmer (Claude Co
 **What it produced:**
 - Each API was checked against the installed `livekit-agents==1.8.9` source before use: `AgentServer.rtc_session`, `AgentSession.start`, the `RealtimeModel` constructor, the `user_input_transcribed` event, and the `LIVEKIT_*` env var names.
 - Phase 1 was built: the booking core, Trust Gate, shared tools, offline text harness, voice wiring, and tests. See the git history for each step.
+- **Result:** 158 pytest tests pass offline. The live voice path is untested because no credentials were available.
+- **Bugs the AI caught in its own code during the session:**
+  - The phone-redaction regex masked "2026-10-29 10:00" (a date plus time) as a phone number. It now uses lookarounds.
+  - The text harness read "2026-10-29 10am" as a 10-digit phone number. ISO dates are now masked before phone detection.
+  - The spoken-"yes" check compared timestamps. Windows' monotonic clock ticks in about 15 ms steps, so "yes, book it" in the same message as the request could count as confirming the read-back. It now uses a strict per-caller turn counter.
+  - A tool-level rejection, such as a forged confirmation ID, was audited as `blocked=0`. It is now audited as blocked, with the rejection code as the reason.
+  - A heredoc patch turned `\b` into a literal backspace character in a regex. This was caught by inspecting the bytes and fixed.
+- **Deviation from the spec, made on purpose:** `book_appointment` returns `{status, code, service, date, start, end}` with no `booking_id`. Prompt #3 asked for no internal records or unnecessary fields, and an auto-increment ID would leak how many bookings the business has. The booking code identifies the booking instead.

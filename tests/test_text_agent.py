@@ -146,7 +146,8 @@ def test_conflict_offers_alternatives_and_recovers(db_path, svc):
 
     second = build_text_agent(db_path, service=svc, session_id="b")
     r = say(second, "book consultation tomorrow 10am, my name is Sita, 9123456789")
-    assert "already taken" in r.reply and "9:30 AM" in r.reply and "Ravi" not in r.reply
+    assert "already taken" in r.reply and "Ravi" not in r.reply
+    assert r.reply.endswith("The nearest free times are Thursday 29 October at 9:00 AM, 9:30 AM, 10:30 AM.")
     r = say(second, "10:30 then")
     assert "10:30 AM" in r.reply
     say(second, "yes")

@@ -128,6 +128,21 @@ def test_book_without_any_read_back_is_rejected(gate, db_path):
     assert booking_count(db_path) == 0
 
 
+def test_confirmation_rejections_are_audited_as_blocked(gate, db_path):
+    ctx = caller()
+    ctx.note_user_utterance("yes")
+    r = asyncio.run(gate.call(ctx, "book_appointment", {**DETAILS, "confirmation_id": "C-FORGED", "caller_confirmed": True}))
+    assert r.blocked and r.reason == "rejected by tool: CONFIRMATION_INVALID"
+    assert r.result["error"]["code"] == "CONFIRMATION_INVALID"  # model still gets an explanation
+    row = connect(db_path).execute("SELECT blocked, reason FROM events ORDER BY id DESC").fetchone()
+    assert tuple(row) == (1, "rejected by tool: CONFIRMATION_INVALID")
+
+
+def test_ordinary_booking_errors_are_not_marked_blocked(gate):
+    r = asyncio.run(gate.call(caller(), "prepare_booking", {**DETAILS, "date": "2026-11-01"}))
+    assert not r.blocked and r.result["error"]["code"] == "CLOSED"
+
+
 def test_book_without_caller_saying_yes_is_rejected(gate, db_path):
     ctx = caller()
     token = prepare(gate, ctx)

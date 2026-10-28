@@ -186,7 +186,10 @@ def _alternatives(err: dict[str, Any]) -> str:
     alts = err.get("alternatives") or []
     if not alts:
         return ""
-    opts = ", ".join(f"{_speak_date(a['date'])} at {_speak_time(a['start'])}" for a in alts)
+    by_day: dict[str, list[str]] = {}
+    for a in alts:
+        by_day.setdefault(a["date"], []).append(_speak_time(a["start"]))
+    opts = "; ".join(f"{_speak_date(d)} at {', '.join(times)}" for d, times in by_day.items())
     return f" The nearest free times are {opts}."
 
 

@@ -28,6 +28,15 @@ DENIED_RESULT = {
     "message": "That isn't something I can help with on this line. "
     "I can share free slots, make a new booking, or answer general questions.",
 }
+# Tool-level refusals that are security events (e.g. booking without a valid read-back). The model still
+# gets the tool's explanation, but the audit log marks the call as blocked so the owner sees it.
+SECURITY_REJECTIONS = {
+    "NOT_CONFIRMED",
+    "CONFIRMATION_INVALID",
+    "CONFIRMATION_EXPIRED",
+    "CONFIRMATION_USED",
+    "CONFIRMATION_MISMATCH",
+}
 ERROR_RESULT = {"status": "error", "error": {"code": "INTERNAL", "message": "Something went wrong. Please try again."}}
 
 
@@ -66,8 +75,12 @@ class TrustGate:
 
         spec = self.policy.tool(ctx.tier, tool).returns
         result = filter_fields(raw, spec) or {"status": "error"}
-        self._audit(ctx, tool, args, blocked=False, reason=reason)
-        return GateResult(tool, redact_value(args), result, False, reason)
+        code = (raw.get("error") or {}).get("code") if isinstance(raw, dict) else None
+        blocked = code in SECURITY_REJECTIONS
+        if blocked:
+            reason = f"rejected by tool: {code}"
+        self._audit(ctx, tool, args, blocked=blocked, reason=reason)
+        return GateResult(tool, redact_value(args), result, blocked, reason)
 
     def _audit(self, ctx: CallContext, tool: str, args: dict[str, Any], *, blocked: bool, reason: str) -> None:
         reason = redact_text(reason)[:200]  # reasons can echo caller-chosen arg names
