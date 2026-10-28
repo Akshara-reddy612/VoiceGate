@@ -15,9 +15,10 @@ def make(db_path, svc, tier=Tier.PUBLIC):
     return VoiceGateAgent(build_gate(db_path, service=svc), call, "test"), call
 
 
-def test_registers_exactly_the_public_tools(db_path, svc):
+def test_registers_exactly_the_caller_tools(db_path, svc):
+    # customer tools are registered, but the gate refuses them until verify_booking succeeds
     agent, _ = make(db_path, svc)
-    assert sorted(t.info.name for t in agent.tools) == ["book_appointment", "get_availability", "get_faq", "prepare_booking"]
+    assert sorted(t.info.name for t in agent.tools) == ["book_appointment", "cancel", "get_availability", "get_faq", "prepare_booking", "reschedule", "verify_booking"]
 
 
 def test_tool_schemas_come_from_docstrings(db_path, svc):

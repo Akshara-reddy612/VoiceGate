@@ -36,6 +36,8 @@ SECURITY_REJECTIONS = {
     "CONFIRMATION_EXPIRED",
     "CONFIRMATION_USED",
     "CONFIRMATION_MISMATCH",
+    "VERIFY_FAILED",
+    "VERIFY_LOCKED",
 }
 ERROR_RESULT = {"status": "error", "error": {"code": "INTERNAL", "message": "Something went wrong. Please try again."}}
 

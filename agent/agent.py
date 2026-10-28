@@ -111,6 +111,73 @@ class VoiceGateAgent(Agent):
         """
         return await self._through_gate("get_faq", {"topic": topic})
 
+    @function_tool()
+    async def verify_booking(self, context: RunContext, code: str, phone_last4: str) -> dict[str, Any]:
+        """Verify an existing customer so they can hear, change or cancel THEIR OWN booking. Needs both values.
+
+        Args:
+            code: The booking code the caller was given, like VG-AB12.
+            phone_last4: Last four digits of the phone number used for the booking.
+        """
+        return await self._through_gate("verify_booking", {"code": code, "phone_last4": phone_last4})
+
+    @function_tool()
+    async def reschedule(
+        self,
+        context: RunContext,
+        code: str,
+        phone_last4: str,
+        new_date: str,
+        new_time: str,
+        confirmation_id: str = "",
+        caller_confirmed: bool = False,
+    ) -> dict[str, Any]:
+        """Move the verified caller's booking. First call without confirmation_id to get a read-back; after the
+        caller says yes, call again with the same values plus confirmation_id and caller_confirmed=true.
+
+        Args:
+            code: The verified booking code.
+            phone_last4: Last four digits of the phone number on the booking.
+            new_date: New date, YYYY-MM-DD.
+            new_time: New start time, 24-hour HH:MM.
+            confirmation_id: From the first call's read-back. Leave empty on the first call.
+            caller_confirmed: True only after the caller said yes to the read-back.
+        """
+        return await self._through_gate(
+            "reschedule",
+            {
+                "code": code,
+                "phone_last4": phone_last4,
+                "new_date": new_date,
+                "new_time": new_time,
+                "confirmation_id": confirmation_id,
+                "caller_confirmed": caller_confirmed or None,
+            },
+        )
+
+    @function_tool()
+    async def cancel(
+        self, context: RunContext, code: str, phone_last4: str, confirmation_id: str = "", caller_confirmed: bool = False
+    ) -> dict[str, Any]:
+        """Cancel the verified caller's booking. First call without confirmation_id to get a read-back; after the
+        caller says yes, call again with confirmation_id and caller_confirmed=true.
+
+        Args:
+            code: The verified booking code.
+            phone_last4: Last four digits of the phone number on the booking.
+            confirmation_id: From the first call's read-back. Leave empty on the first call.
+            caller_confirmed: True only after the caller said yes to the read-back.
+        """
+        return await self._through_gate(
+            "cancel",
+            {
+                "code": code,
+                "phone_last4": phone_last4,
+                "confirmation_id": confirmation_id,
+                "caller_confirmed": caller_confirmed or None,
+            },
+        )
+
 
 def tool_schemas() -> list[dict[str, Any]]:
     """Provider-neutral schemas of the tools above, so LLM text mode offers the model exactly the voice tools."""

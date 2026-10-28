@@ -68,7 +68,7 @@ def bookings(db_path):
 def test_text_mode_offers_exactly_the_voice_tools(db_path, svc):
     names = sorted(t["name"] for t in tool_schemas())
     voice = sorted(t.info.name for t in VoiceGateAgent(None, None, "x").tools)
-    assert names == voice == ["book_appointment", "get_availability", "get_faq", "prepare_booking"]
+    assert names == voice == ["book_appointment", "cancel", "get_availability", "get_faq", "prepare_booking", "reschedule", "verify_booking"]
 
 
 def test_llm_agent_full_booking_flow(db_path, svc):

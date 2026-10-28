@@ -217,3 +217,57 @@ def test_every_tool_call_is_audited(agent, db_path):
     say(agent, "/call list_bookings {}")
     rows = connect(db_path).execute("SELECT tool, blocked FROM events ORDER BY id").fetchall()
     assert [tuple(r) for r in rows] == [("get_availability", 0), ("list_bookings", 1)]
+
+
+# ---------- code-mixed booking and customer flows (offline rule brain) ----------
+
+
+def _book(db_path, svc, session, text):
+    a = build_text_agent(db_path, service=svc, session_id=session)
+    say(a, text)
+    r = say(a, "yes")
+    return r.reply.split("booking code is ")[1].split(".")[0]
+
+
+def test_tenglish_booking_conversation(agent, db_path):
+    r = say(agent, "repu sayantram 5 ki consultation kavali, naa peru Ravi, 9876543210")
+    # name isn't parsed from Telugu "naa peru" -> agent asks; date/time/service/phone were understood
+    assert r.reply == "May I have your name, please?"
+    r = say(agent, "Ravi")
+    assert r.reply == "General consultation for Ravi on Thursday 29 October at 5:00 PM. Shall I confirm this booking?"
+    assert say(agent, "avunu").reply.startswith("Confirmed.")
+
+
+def test_part_of_day_without_hour_asks_for_hour(agent):
+    r = say(agent, "kal shaam ko consultation, I'm Ravi, 9876543210")
+    assert r.reply == "What time in the evening?"
+    assert "5:00 PM" in say(agent, "5 baje").reply
+
+
+def test_customer_verify_and_cancel(db_path, svc):
+    code = _book(db_path, svc, "booker", "book consultation tomorrow 10am, my name is Ravi, 9876543210")
+    a = build_text_agent(db_path, service=svc, session_id="customer")
+    assert say(a, "I want to cancel my booking").reply == "Sure. Please tell me your booking code."
+    assert say(a, code).reply == "Sure. Please tell me the last four digits of your phone number."
+    r = say(a, "3210")
+    assert r.reply.startswith("Cancel your General consultation on Thursday 29 October at 10:00 AM")
+    assert [c.tool for c in r.tool_calls] == ["verify_booking", "cancel"]
+    r = say(a, "haan cancel karo")
+    assert r.reply == f"Done. Booking {code} is cancelled."
+    assert connect(db_path).execute("SELECT status FROM bookings").fetchone()[0] == "cancelled"
+
+
+def test_customer_reschedule_with_hinglish_time(db_path, svc):
+    code = _book(db_path, svc, "booker", "book consultation tomorrow 10am, my name is Ravi, 9876543210")
+    a = build_text_agent(db_path, service=svc, session_id="customer")
+    r = say(a, f"{code} last four 3210, please reschedule to parso saadhe das baje")
+    assert "to Friday 30 October at 10:30 AM" in r.reply
+    assert say(a, "yes").reply == "Done. Your General consultation is now on Friday 30 October at 10:30 AM."
+
+
+def test_wrong_last4_gives_generic_message_and_no_details(db_path, svc):
+    code = _book(db_path, svc, "booker", "book consultation tomorrow 10am, my name is Sita Devi, 9123456789")
+    a = build_text_agent(db_path, service=svc, session_id="attacker")
+    r = say(a, f"cancel {code}, last four 0000")
+    assert r.reply == "That booking code and phone number don't match our records." and r.blocked
+    assert "Sita" not in r.reply and "10:00" not in r.reply

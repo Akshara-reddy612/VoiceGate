@@ -246,7 +246,10 @@ def test_slot_taken_between_read_back_and_yes(gate, db_path):
 
 def test_availability_validation(gate):
     ctx = caller()
-    assert call(gate, ctx, "get_availability", date="tomorrow")["error"]["code"] == "INVALID_INPUT"
+    assert call(gate, ctx, "get_availability", date="someday soon")["error"]["code"] == "INVALID_INPUT"
+    # spoken dates are normalized at the tool layer (Phase 3 normalizer)
+    assert call(gate, ctx, "get_availability", date="tomorrow")["date"] == "2026-10-29"
+    assert call(gate, ctx, "get_availability", date="repu")["date"] == "2026-10-29"
     assert call(gate, ctx, "get_availability", date="2026-10-27")["error"]["code"] == "PAST_DATE"
     assert call(gate, ctx, "get_availability", date="2026-11-01")["error"]["code"] == "CLOSED"
     assert call(gate, ctx, "get_availability", date="2026-10-29", service="tattoo")["error"]["code"] == "UNKNOWN_SERVICE"
@@ -272,3 +275,9 @@ def test_not_affirmative(text):
 
 def test_negative():
     assert is_negative("vaddu, change it") and not is_negative("sure")
+
+
+def test_action_word_is_not_a_no_when_confirming_that_action():
+    assert not is_affirmative("yes cancel it")
+    assert is_affirmative("yes cancel it", frozenset({"cancel"}))
+    assert not is_affirmative("no, don't cancel", frozenset({"cancel"}))

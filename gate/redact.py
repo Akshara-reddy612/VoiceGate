@@ -22,11 +22,15 @@ def redact_text(text: str) -> str:
     return PHONE_RE.sub(_mask_phone, EMAIL_RE.sub("[email]", text))
 
 
+# Credential parts: masked by key name, since 4 digits or a token don't look like PII to the regexes.
+SECRET_KEYS = {"phone_last4", "confirmation_id"}
+
+
 def redact_value(value: Any) -> Any:
     if isinstance(value, str):
         return redact_text(value)
     if isinstance(value, dict):
-        return {k: redact_value(v) for k, v in value.items()}
+        return {k: ("[redacted]" if k in SECRET_KEYS and v else redact_value(v)) for k, v in value.items()}
     if isinstance(value, list):
         return [redact_value(v) for v in value]
     return value

@@ -183,13 +183,13 @@ class BookingService:
         candidates.sort(key=lambda s: (abs(s.start - wanted), s.start))
         return sorted(candidates[:n], key=lambda s: s.start)
 
-    def check_conflict(self, start: datetime, end: datetime) -> BookingError | None:
-        """Read-only pre-check used before read-back. create_booking re-checks inside its transaction."""
+    def check_conflict(self, start: datetime, end: datetime, exclude_id: int | None = None) -> BookingError | None:
+        """Read-only pre-check used before read-back. Writes re-check inside their transaction."""
         conn = connect(self.db_path)
         try:
             clash = conn.execute(
-                "SELECT 1 FROM bookings WHERE status = 'confirmed' AND start < ? AND \"end\" > ? LIMIT 1",
-                (_iso(end), _iso(start)),
+                "SELECT 1 FROM bookings WHERE status = 'confirmed' AND start < ? AND \"end\" > ? AND id IS NOT ? LIMIT 1",
+                (_iso(end), _iso(start), exclude_id),
             ).fetchone()
         finally:
             conn.close()
@@ -278,3 +278,71 @@ class BookingService:
             return BookingResult(ok=True, booking=saved)
         finally:
             conn.close()
+
+    # ---------- customer operations (caller already verified by the tool layer) ----------
+
+    def find_by_code(self, code: str) -> Booking | None:
+        conn = connect(self.db_path)
+        try:
+            row = conn.execute("SELECT * FROM bookings WHERE code = ?", (code.strip().upper(),)).fetchone()
+            return Booking.model_validate(dict(row)) if row else None
+        finally:
+            conn.close()
+
+    def _verified_update(
+        self, row_id: int, sql: str, params: tuple, expect: Callable[[Booking], bool], conflict: tuple[datetime, datetime] | None
+    ) -> BookingResult:
+        conn = connect(self.db_path)
+        try:
+            try:
+                conn.execute("BEGIN IMMEDIATE")
+                if conflict:
+                    start, end = conflict
+                    clash = conn.execute(
+                        "SELECT 1 FROM bookings WHERE status = 'confirmed' AND start < ? AND \"end\" > ? AND id != ? LIMIT 1",
+                        (_iso(end), _iso(start), row_id),
+                    ).fetchone()
+                    if clash:
+                        conn.execute("ROLLBACK")
+                        return BookingResult(ok=False, error=BookingError(
+                            code=ErrorCode.CONFLICT, message="That time is already taken.",
+                            alternatives=self.find_alternatives(start, end - start)))
+                changed = conn.execute(sql, params).rowcount
+                if changed != 1:
+                    conn.execute("ROLLBACK")
+                    return BookingResult(ok=False, error=BookingError(
+                        code=ErrorCode.NOT_ACTIVE, message="That booking is no longer active."))
+                conn.execute("COMMIT")
+            except sqlite3.Error:
+                if conn.in_transaction:
+                    conn.execute("ROLLBACK")
+                return BookingResult(ok=False, error=BookingError(code=ErrorCode.WRITE_FAILED, message="Could not save the change."))
+            saved = self._read_back(conn, row_id)
+            if saved is None or not expect(saved):
+                return BookingResult(ok=False, error=BookingError(
+                    code=ErrorCode.WRITE_NOT_VERIFIED, message="The change could not be verified. Nothing is confirmed."))
+            return BookingResult(ok=True, booking=saved)
+        finally:
+            conn.close()
+
+    def reschedule(self, booking: Booking, start: datetime) -> BookingResult:
+        end = start + (booking.end - booking.start)
+        err = self.check_time_rules(start, end)
+        if err:
+            return BookingResult(ok=False, error=err)
+        return self._verified_update(
+            booking.id,
+            "UPDATE bookings SET start = ?, \"end\" = ? WHERE id = ? AND status = 'confirmed'",
+            (_iso(start), _iso(end), booking.id),
+            lambda b: b.start == start and b.end == end and b.status == "confirmed" and b.code == booking.code,
+            conflict=(start, end),
+        )
+
+    def cancel(self, booking: Booking) -> BookingResult:
+        return self._verified_update(
+            booking.id,
+            "UPDATE bookings SET status = 'cancelled' WHERE id = ? AND status = 'confirmed'",
+            (booking.id,),
+            lambda b: b.status == "cancelled" and b.code == booking.code,
+            conflict=None,
+        )

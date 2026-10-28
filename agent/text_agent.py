@@ -1,8 +1,8 @@
 """Text-mode VoiceGate: same tools and Trust Gate as voice, no microphone, LiveKit or API key.
 
-Phase 1 uses an offline, rule-based "brain" (RuleBrain) that drives the real tools through the real
-gate. It is deterministic and English-only; it is NOT an LLM. Red-team results from it show that the
-gate holds, not how a language model behaves. An LLM brain comes in Phase 2.
+TextAgent is an offline, rule-based "brain" that drives the real tools through the real gate. It is
+deterministic (English plus the Tenglish/Hinglish date/time phrases agent/normalizer.py knows); it is
+NOT an LLM. LLMTextAgent (below) drives the same gate with Gemini or a mock model.
 
 Run:  python -m agent.text_agent
 Debug: type `/call <tool> {json args}` to send a raw tool call through the gate as this caller.
@@ -20,6 +20,7 @@ from datetime import date, datetime, time, timedelta
 from pathlib import Path
 from typing import Any
 
+from agent.normalizer import normalize
 from agent.llm_loop import ChatModel, Conversation, ExecResult, ToolCallRecord, run_turn
 from agent.prompts import build_instructions
 from agent.tools import build_gate
@@ -53,8 +54,12 @@ FAQ_TOPICS = {
     "location": r"\b(where|address|location|located|directions)\b",
     "fees": r"\b(fees?|cost|price|charges?)\b|how much",
     "payment": r"\b(pay|payment|upi|cash|card)\b",
-    "cancellation": r"\b(cancel|reschedule)\b",
+    "cancellation": r"\b(cancellation policy|refund)\b",
 }
+CODE_RE = re.compile(r"\bVG-?([A-HJ-NP-Z2-9]{4})\b", re.IGNORECASE)
+LAST4_RE = re.compile(r"(?<![\d:])(\d{4})(?![\d:])")
+CANCEL_WORDS = re.compile(r"\b(cancel|radd)\b")
+RESCHEDULE_WORDS = re.compile(r"\b(reschedule|move|shift|postpone|prepone|change my|change the booking)\b")
 
 
 # ---------------------------------------------------------------- parsing helpers (English only in Phase 1)
@@ -195,6 +200,13 @@ class TextAgent:
         self.slots: dict[str, Any] = {}
         self.pending: str | None = None  # confirmation_id awaiting yes/no
         self.asked: str | None = None
+        self.part_hint: str | None = None  # "evening" when the caller said a part of day but no hour
+        # customer flow
+        self.creds: dict[str, str] = {}  # code / phone_last4 as given by the caller
+        self.verified: dict[str, Any] | None = None  # caller's own booking, from verify_booking
+        self.intent: str | None = None  # "cancel" | "reschedule"
+        self.new_slot: dict[str, str] = {}
+        self.pending_action: tuple[str, str] | None = None  # (tool, confirmation_id)
         self._calls: list[ToolCallRecord] = []
 
     def greeting(self) -> str:
@@ -235,11 +247,15 @@ class TextAgent:
         found: dict[str, Any] = {}
         if phone:
             found["phone"] = phone
-        if d := extract_date(rest, self.service.now().date()):
+        today = self.service.now().date()
+        n = normalize(rest, today, self.cfg)
+        if d := n.date or extract_date(rest, today):
             found["date"] = d.isoformat()
-        if t := extract_time(rest, bare_number_ok=self.asked == "time"):
+        if t := n.time or extract_time(rest, bare_number_ok=self.asked == "time"):
             found["time"] = t.strftime("%H:%M")
-        if s := extract_service(rest, self.cfg):
+        if "time" not in found and "needs_hour" in n.issues:
+            self.part_hint = n.part_of_day
+        if s := n.service or extract_service(rest, self.cfg):
             found["service"] = s
         if n := extract_name(rest, bare_ok=self.asked == "name" and not found):
             found["name"] = n
@@ -248,6 +264,8 @@ class TextAgent:
 
     async def _respond(self, text: str) -> str:
         low = text.lower()
+        if self.pending_action or self.verified or self.creds or self._wants_customer_flow(text, low):
+            return await self._customer(text, low)
         if self.pending:
             if is_affirmative(text):
                 return await self._book()
@@ -290,6 +308,8 @@ class TextAgent:
         missing = [f for f in FIELDS if f not in self.slots]
         if missing:
             self.asked = missing[0]
+            if missing[0] == "time" and self.part_hint:
+                return f"What time in the {self.part_hint}?"
             services = ", ".join(s.label for s in self.cfg.services.values())
             return QUESTIONS[missing[0]].format(services=services)
         self.asked = None
@@ -313,6 +333,88 @@ class TextAgent:
         err = r.get("error", {})
         self._forget_for(err.get("code", ""))
         return "The booking was not made. " + (err.get("message") or r.get("message", "")) + _alternatives(err)
+
+    # ---- customer flow: verify (code + last 4) -> reschedule / cancel with read-back
+
+    def _wants_customer_flow(self, text: str, low: str) -> bool:
+        if CODE_RE.search(text):
+            return True
+        return not self.slots and not self.pending and bool(CANCEL_WORDS.search(low) or RESCHEDULE_WORDS.search(low))
+
+    async def _customer(self, text: str, low: str) -> str:
+        if self.pending_action:
+            tool, token = self.pending_action
+            action_words = frozenset({"cancel"} if tool == "cancel" else {"change"})
+            if is_affirmative(text, action_words):
+                self.pending_action = None
+                args = {**self._cred_args(), "confirmation_id": token, "caller_confirmed": True}
+                if tool == "reschedule":
+                    args.update(self.new_slot)
+                r = await self.call_tool(tool, args)
+                return self._customer_done(r)
+            self.pending_action = None
+            if is_negative(text):
+                return "Okay, I haven't changed anything."
+
+        if m := CODE_RE.search(text):
+            self.creds["code"] = "VG-" + m[1].upper()
+        rest = CODE_RE.sub(" ", text)
+        if m := LAST4_RE.search(rest):
+            self.creds["phone_last4"] = m[1]
+        if CANCEL_WORDS.search(low):
+            self.intent = "cancel"
+        elif RESCHEDULE_WORDS.search(low):
+            self.intent = "reschedule"
+        n = normalize(LAST4_RE.sub(" ", rest), self.service.now().date(), self.cfg)
+        if n.date:
+            self.new_slot["new_date"] = n.date.isoformat()
+        if n.time:
+            self.new_slot["new_time"] = n.time.strftime("%H:%M")
+
+        if not self.verified:
+            if "code" not in self.creds or "phone_last4" not in self.creds:
+                need = "your booking code" if "code" not in self.creds else "the last four digits of your phone number"
+                return f"Sure. Please tell me {need}."
+            r = await self.call_tool("verify_booking", self._cred_args())
+            if r.get("status") != "verified":
+                self.creds = {}
+                return (r.get("error") or {}).get("message") or r.get("message", "")
+            self.verified = r["booking"]
+            b = self.verified
+            found = f"I found your {b['service']} on {_speak_date(b['date'])} at {_speak_time(b['start'])}"
+            if b.get("status") != "confirmed":
+                found += f", which is {b['status']}"
+            if not self.intent:
+                return found + ". Would you like to change it or cancel it?"
+
+        if self.intent == "cancel":
+            r = await self.call_tool("cancel", self._cred_args())
+        elif self.intent == "reschedule":
+            if "new_date" not in self.new_slot or "new_time" not in self.new_slot:
+                return "Which new date and time would you like?"
+            r = await self.call_tool("reschedule", {**self._cred_args(), **self.new_slot})
+        else:
+            return "Would you like to change your booking or cancel it?"
+        if r.get("status") == "needs_confirmation":
+            self.pending_action = (self.intent, r["confirmation_id"])
+            return r["readback_text"]
+        err = r.get("error") or {}
+        if self.intent == "reschedule":
+            self.new_slot = {}
+        return (err.get("message") or r.get("message", "")) + _alternatives(err)
+
+    def _cred_args(self) -> dict[str, str]:
+        return {"code": self.creds.get("code", ""), "phone_last4": self.creds.get("phone_last4", "")}
+
+    def _customer_done(self, r: dict[str, Any]) -> str:
+        if r.get("status") == "cancelled":
+            self.intent = None
+            return f"Done. Booking {r['code']} is cancelled."
+        if r.get("status") == "rescheduled":
+            self.intent, self.new_slot = None, {}
+            return f"Done. Your {r['service']} is now on {_speak_date(r['date'])} at {_speak_time(r['start'])}."
+        err = r.get("error") or {}
+        return "Nothing was changed. " + (err.get("message") or r.get("message", "")) + _alternatives(err)
 
     def _forget_for(self, code: str) -> None:
         drop = {

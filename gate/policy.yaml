@@ -49,6 +49,15 @@ shared:
       answer: true
       error: *error
 
+  # Both factors (booking code + last 4 phone digits) are checked in code; success switches the call to
+  # the customer tier for THAT booking only. Returns only the caller's own booking, never name or phone.
+  verify_booking: &verify_booking
+    args: [code, phone_last4]
+    returns:
+      status: true
+      booking: { code: true, service: true, date: true, start: true, end: true, status: true }
+      error: *error
+
 tiers:
   public:
     channels: [voice, text]
@@ -57,6 +66,7 @@ tiers:
       prepare_booking: *prepare_booking
       book_appointment: *book_appointment
       get_faq: *get_faq
+      verify_booking: *verify_booking
 
   customer:
     channels: [voice, text]
@@ -65,15 +75,32 @@ tiers:
       prepare_booking: *prepare_booking
       book_appointment: *book_appointment
       get_faq: *get_faq
-      # reschedule / cancel tool implementations arrive in Phase 6; the authorization rule is live now.
+      verify_booking: *verify_booking
+      # Two-step: first call returns a read-back + confirmation_id, second call (after a spoken yes) writes.
       reschedule:
-        args: [code, phone_last4, new_date, new_time]
+        args: [code, phone_last4, new_date, new_time, confirmation_id, caller_confirmed]
         require: [own_booking]
-        returns: { status: true, code: true, date: true, start: true, end: true, error: *error }
+        returns:
+          status: true
+          confirmation_id: true
+          expires_in_seconds: true
+          readback_text: true
+          code: true
+          service: true
+          date: true
+          start: true
+          end: true
+          error: *error
       cancel:
-        args: [code, phone_last4]
+        args: [code, phone_last4, confirmation_id, caller_confirmed]
         require: [own_booking]
-        returns: { status: true, code: true, error: *error }
+        returns:
+          status: true
+          confirmation_id: true
+          expires_in_seconds: true
+          readback_text: true
+          code: true
+          error: *error
 
   # The owner never talks to the agent. Owner data is served by the dashboard API only.
   owner:
