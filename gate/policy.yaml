@@ -1,0 +1,80 @@
+# Trust Gate policy. Anything not listed here is denied (tools, arguments) or dropped (result fields).
+#
+# returns: an allowlist tree. `true` keeps a scalar field; a nested map keeps only the listed keys of
+# an object (or of every object in a list). A field that is an object/list but marked `true` is dropped.
+version: 1
+
+shared:
+  error: &error
+    code: true
+    message: true
+    alternatives: { date: true, start: true, end: true }
+
+  get_availability: &get_availability
+    args: [date, service]
+    returns:
+      status: true
+      date: true
+      service: true
+      slots: { start: true, end: true }
+      error: *error
+
+  prepare_booking: &prepare_booking
+    args: [name, phone, service, date, time]
+    returns:
+      status: true
+      confirmation_id: true
+      expires_in_seconds: true
+      readback: { name: true, service: true, date: true, time: true }
+      readback_text: true
+      error: *error
+
+  book_appointment: &book_appointment
+    args: [name, phone, service, date, time, confirmation_id, caller_confirmed]
+    returns:
+      status: true
+      code: true
+      service: true
+      date: true
+      start: true
+      end: true
+      error: *error
+
+  get_faq: &get_faq
+    args: [topic]
+    returns:
+      status: true
+      topic: true
+      answer: true
+      error: *error
+
+tiers:
+  public:
+    channels: [voice, text]
+    tools:
+      get_availability: *get_availability
+      prepare_booking: *prepare_booking
+      book_appointment: *book_appointment
+      get_faq: *get_faq
+
+  customer:
+    channels: [voice, text]
+    tools:
+      get_availability: *get_availability
+      prepare_booking: *prepare_booking
+      book_appointment: *book_appointment
+      get_faq: *get_faq
+      # reschedule / cancel tool implementations arrive in Phase 6; the authorization rule is live now.
+      reschedule:
+        args: [code, phone_last4, new_date, new_time]
+        require: [own_booking]
+        returns: { status: true, code: true, date: true, start: true, end: true, error: *error }
+      cancel:
+        args: [code, phone_last4]
+        require: [own_booking]
+        returns: { status: true, code: true, error: *error }
+
+  # The owner never talks to the agent. Owner data is served by the dashboard API only.
+  owner:
+    channels: [dashboard]
+    tools: {}
