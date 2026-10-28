@@ -280,7 +280,7 @@ def normalize(text: str, today: date, cfg: BusinessConfig | None = None) -> Norm
     else:
         tm = extract_time(t, part, issues)
         if "ambiguous_time" in issues:
-            candidates = list(dict.fromkeys(c for c in time_candidates(t, part, []) if c))
+            candidates = sorted({c for c in time_candidates(t, part, []) if c})
     if tm is None and part and "ambiguous_time" not in issues and "invalid_time" not in issues:
         issues.append("needs_hour")
     service = match_service(t, cfg) if cfg else None

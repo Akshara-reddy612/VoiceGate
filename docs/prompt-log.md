@@ -117,3 +117,30 @@ The AI flagged that this reorders the original plan: the dashboard, which UI/UX 
   - **First run: 27/30.** The eval caught a real bug: the text agent's code pattern rejected 0, O, 1, I and L, so a code like "VG-V1KR" was never recognized.
   - **After the fix: 30/30**, with 0 double bookings and 0 false confirmations.
 - **Other fix:** a test exposed that "haan, cancel karo" was rejected as a "no", because "cancel" is on the negative-word list. The action word being confirmed no longer counts as a "no".
+
+## #6 API and dashboard, and fixing confidently wrong dates and times
+
+**Prompt (summary):**
+- Run the suite first.
+- Build the FastAPI endpoints and the React dashboard against the real SQLite service, with every read and write going through the Trust Gate.
+- Fix "next week Tuesday" and "5 PM or 6 PM": ambiguity must trigger a clarifying question.
+- Keep the held-out set unchanged and report its score honestly.
+- Don't push.
+
+**What it produced:**
+- **Suite before any change:** 273 passed, 1 skipped.
+- **Normalizer:**
+  - It now collects every time expression, so text is never read twice: "4:30 pm" is one time, not two.
+  - Two or more distinct times, "X or Y", or "between X and Y" flag the time as ambiguous and record the options.
+  - "next week" plus a weekday resolves to the following calendar week. "next week" alone asks which day.
+  - Tools return `AMBIGUOUS_TIME` or `AMBIGUOUS_DATE`, and the offline agent asks a follow-up question.
+  - The held-out file is unchanged and scores **8/20 → 10/20**. Only HO04 and HO20, which the user named, were targeted. None of the 10 remaining misses is confidently wrong: each extracts nothing and asks.
+- **API:**
+  - Owner reads are owner-tier gate tools, available only on the dashboard channel, each with its own allowlist. They never return internal IDs or phone digits.
+  - Owner login is disabled until a real `OWNER_PASSWORD` is set, and is rate limited.
+  - `/api/simulate` runs a caller session on the real database through the gate, or replays an attack on a synthetic database.
+  - `api/simulate.py` is the only production module allowed to import the eval baseline, and a test enforces that.
+- **Dashboard:** Login, Bookings (with availability), Live events, Metrics, Caller test, and Baseline vs VoiceGate. Plain CSS, light and dark themes, and loading, empty and error states.
+- **Issues hit along the way:**
+  - LiveKit refuses to register its plugin off the main thread, and the test client runs requests on a worker thread. The fix imports the agent module when the app starts.
+  - A server-cleanup command that would have killed every `python.exe` was correctly denied by the permission system. The server now runs as a tracked background task that is stopped by its ID.
