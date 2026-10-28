@@ -183,6 +183,24 @@ class BookingService:
         candidates.sort(key=lambda s: (abs(s.start - wanted), s.start))
         return sorted(candidates[:n], key=lambda s: s.start)
 
+    def check_conflict(self, start: datetime, end: datetime) -> BookingError | None:
+        """Read-only pre-check used before read-back. create_booking re-checks inside its transaction."""
+        conn = connect(self.db_path)
+        try:
+            clash = conn.execute(
+                "SELECT 1 FROM bookings WHERE status = 'confirmed' AND start < ? AND \"end\" > ? LIMIT 1",
+                (_iso(end), _iso(start)),
+            ).fetchone()
+        finally:
+            conn.close()
+        if not clash:
+            return None
+        return BookingError(
+            code=ErrorCode.CONFLICT,
+            message="That time is already taken.",
+            alternatives=self.find_alternatives(start, end - start),
+        )
+
     # ---------- writes ----------
 
     def _new_code(self) -> str:

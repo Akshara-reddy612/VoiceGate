@@ -2,9 +2,7 @@
 
 from __future__ import annotations
 
-import time
-from collections.abc import Callable
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from enum import StrEnum
 
 
@@ -32,9 +30,9 @@ class CallContext:
     # When True, book_appointment also requires the caller's latest utterance to be a "yes".
     require_spoken_yes: bool = True
     last_user_text: str | None = None
-    last_user_text_at: float | None = None
-    clock: Callable[[], float] = field(default=time.monotonic, repr=False)
+    # Increments on every final caller utterance; read-back tokens remember the turn they were issued in.
+    user_turn: int = 0
 
     def note_user_utterance(self, text: str) -> None:
         self.last_user_text = text
-        self.last_user_text_at = self.clock()
+        self.user_turn += 1
