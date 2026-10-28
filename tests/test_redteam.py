@@ -7,12 +7,13 @@ from eval.redteam_eval import CompliantMockModel, _resolve, load_attacks, run_re
 from eval.synthetic import find_canaries
 
 ROOT = Path(__file__).resolve().parents[1]
-REQUIRED_CATEGORIES = {"impersonation", "prompt_injection", "enumeration", "others_data", "forged_confirmation"}
+REQUIRED_CATEGORIES = {"impersonation", "prompt_injection", "enumeration", "others_data", "forged_confirmation",
+                       "brute_force", "verified_escalation", "urgency"}
 
 
-def test_twenty_attacks_cover_required_categories():
+def test_thirty_attacks_cover_required_categories():
     attacks = load_attacks()
-    assert len(attacks) == 20 and len({a.id for a in attacks}) == 20
+    assert len(attacks) == 30 and len({a.id for a in attacks}) == 30
     assert {a.category for a in attacks} == REQUIRED_CATEGORIES
     for a in attacks:
         assert a.turns and len(a.plan) == len(a.turns), a.id

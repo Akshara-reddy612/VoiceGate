@@ -1,0 +1,1112 @@
+{
+  "suite": "booking",
+  "brain": "rules",
+  "measured_with": "offline rule brain (not an LLM)",
+  "cases": 30,
+  "outcome_correct": 30,
+  "double_bookings": 0,
+  "false_confirmations": 0,
+  "errors": 0,
+  "failures": [],
+  "results": [
+    {
+      "id": "BK01",
+      "desc": "English one-shot booking",
+      "outcome_ok": true,
+      "double_bookings": 0,
+      "false_confirmations": [],
+      "new_bookings": [
+        [
+          "2026-11-03",
+          "10:00",
+          "consultation"
+        ]
+      ],
+      "expected": [
+        [
+          "2026-11-03",
+          "10:00",
+          "consultation"
+        ]
+      ],
+      "error": null,
+      "transcript": [
+        {
+          "caller": "A",
+          "say": "Book a consultation tomorrow at 10am, my name is Ravi, 9000000001",
+          "reply": "General consultation for Ravi on Tuesday 3 November at 10:00 AM. Shall I confirm this booking?",
+          "tools": [
+            "prepare_booking"
+          ]
+        },
+        {
+          "caller": "A",
+          "say": "yes",
+          "reply": "Confirmed. Your General consultation is booked for Tuesday 3 November at 10:00 AM. Your booking code is VG-AYAM. Please keep it to change or cancel later.",
+          "tools": [
+            "book_appointment"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "BK02",
+      "desc": "Tenglish evening booking",
+      "outcome_ok": true,
+      "double_bookings": 0,
+      "false_confirmations": [],
+      "new_bookings": [
+        [
+          "2026-11-03",
+          "17:00",
+          "consultation"
+        ]
+      ],
+      "expected": [
+        [
+          "2026-11-03",
+          "17:00",
+          "consultation"
+        ]
+      ],
+      "error": null,
+      "transcript": [
+        {
+          "caller": "A",
+          "say": "repu sayantram 5 ki consultation kavali, my name is Lakshmi, 9000000002",
+          "reply": "General consultation for Lakshmi on Tuesday 3 November at 5:00 PM. Shall I confirm this booking?",
+          "tools": [
+            "prepare_booking"
+          ]
+        },
+        {
+          "caller": "A",
+          "say": "avunu",
+          "reply": "Confirmed. Your General consultation is booked for Tuesday 3 November at 5:00 PM. Your booking code is VG-ZCAK. Please keep it to change or cancel later.",
+          "tools": [
+            "book_appointment"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "BK03",
+      "desc": "Hinglish half-past booking",
+      "outcome_ok": true,
+      "double_bookings": 0,
+      "false_confirmations": [],
+      "new_bookings": [
+        [
+          "2026-11-03",
+          "10:30",
+          "vaccination"
+        ]
+      ],
+      "expected": [
+        [
+          "2026-11-03",
+          "10:30",
+          "vaccination"
+        ]
+      ],
+      "error": null,
+      "transcript": [
+        {
+          "caller": "A",
+          "say": "kal subah saadhe das baje vaccination, I am Priya, 9000000003",
+          "reply": "Vaccination for Priya on Tuesday 3 November at 10:30 AM. Shall I confirm this booking?",
+          "tools": [
+            "prepare_booking"
+          ]
+        },
+        {
+          "caller": "A",
+          "say": "haan ji",
+          "reply": "Confirmed. Your Vaccination is booked for Tuesday 3 November at 10:30 AM. Your booking code is VG-SH6Z. Please keep it to change or cancel later.",
+          "tools": [
+            "book_appointment"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "BK04",
+      "desc": "details collected one at a time",
+      "outcome_ok": true,
+      "double_bookings": 0,
+      "false_confirmations": [],
+      "new_bookings": [
+        [
+          "2026-11-04",
+          "11:00",
+          "full_checkup"
+        ]
+      ],
+      "expected": [
+        [
+          "2026-11-04",
+          "11:00",
+          "full_checkup"
+        ]
+      ],
+      "error": null,
+      "transcript": [
+        {
+          "caller": "A",
+          "say": "I need an appointment",
+          "reply": "May I have your name, please?",
+          "tools": []
+        },
+        {
+          "caller": "A",
+          "say": "Kiran",
+          "reply": "What is your 10-digit phone number?",
+          "tools": []
+        },
+        {
+          "caller": "A",
+          "say": "9000000004",
+          "reply": "Which service do you need? We offer General consultation, Full body checkup, Vaccination.",
+          "tools": []
+        },
+        {
+          "caller": "A",
+          "say": "full body checkup",
+          "reply": "Which date would you like?",
+          "tools": []
+        },
+        {
+          "caller": "A",
+          "say": "day after tomorrow",
+          "reply": "What time would suit you?",
+          "tools": []
+        },
+        {
+          "caller": "A",
+          "say": "11am",
+          "reply": "Full body checkup for Kiran on Wednesday 4 November at 11:00 AM. Shall I confirm this booking?",
+          "tools": [
+            "prepare_booking"
+          ]
+        },
+        {
+          "caller": "A",
+          "say": "yes",
+          "reply": "Confirmed. Your Full body checkup is booked for Wednesday 4 November at 11:00 AM. Your booking code is VG-NZDW. Please keep it to change or cancel later.",
+          "tools": [
+            "book_appointment"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "BK05",
+      "desc": "Hinglish day-after-tomorrow afternoon",
+      "outcome_ok": true,
+      "double_bookings": 0,
+      "false_confirmations": [],
+      "new_bookings": [
+        [
+          "2026-11-04",
+          "16:00",
+          "consultation"
+        ]
+      ],
+      "expected": [
+        [
+          "2026-11-04",
+          "16:00",
+          "consultation"
+        ]
+      ],
+      "error": null,
+      "transcript": [
+        {
+          "caller": "A",
+          "say": "parso shaam 4 baje consultation, I'm Anil, 9000000005",
+          "reply": "General consultation for Anil on Wednesday 4 November at 4:00 PM. Shall I confirm this booking?",
+          "tools": [
+            "prepare_booking"
+          ]
+        },
+        {
+          "caller": "A",
+          "say": "theek hai, haan",
+          "reply": "Confirmed. Your General consultation is booked for Wednesday 4 November at 4:00 PM. Your booking code is VG-RX85. Please keep it to change or cancel later.",
+          "tools": [
+            "book_appointment"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "BK06",
+      "desc": "weekday name",
+      "outcome_ok": true,
+      "double_bookings": 0,
+      "false_confirmations": [],
+      "new_bookings": [
+        [
+          "2026-11-06",
+          "15:00",
+          "vaccination"
+        ]
+      ],
+      "expected": [
+        [
+          "2026-11-06",
+          "15:00",
+          "vaccination"
+        ]
+      ],
+      "error": null,
+      "transcript": [
+        {
+          "caller": "A",
+          "say": "Book a vaccination on friday at 3 pm, my name is Rohan, 9000000006",
+          "reply": "Vaccination for Rohan on Friday 6 November at 3:00 PM. Shall I confirm this booking?",
+          "tools": [
+            "prepare_booking"
+          ]
+        },
+        {
+          "caller": "A",
+          "say": "yes please",
+          "reply": "Confirmed. Your Vaccination is booked for Friday 6 November at 3:00 PM. Your booking code is VG-RKXX. Please keep it to change or cancel later.",
+          "tools": [
+            "book_appointment"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "BK07",
+      "desc": "Saturday short hours, last valid slot region",
+      "outcome_ok": true,
+      "double_bookings": 0,
+      "false_confirmations": [],
+      "new_bookings": [
+        [
+          "2026-11-07",
+          "13:00",
+          "consultation"
+        ]
+      ],
+      "expected": [
+        [
+          "2026-11-07",
+          "13:00",
+          "consultation"
+        ]
+      ],
+      "error": null,
+      "transcript": [
+        {
+          "caller": "A",
+          "say": "consultation on saturday at 1 pm, my name is Divya, 9000000007",
+          "reply": "General consultation for Divya on Saturday 7 November at 1:00 PM. Shall I confirm this booking?",
+          "tools": [
+            "prepare_booking"
+          ]
+        },
+        {
+          "caller": "A",
+          "say": "yes",
+          "reply": "Confirmed. Your General consultation is booked for Saturday 7 November at 1:00 PM. Your booking code is VG-XYZX. Please keep it to change or cancel later.",
+          "tools": [
+            "book_appointment"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "BK08",
+      "desc": "Tenglish weekday morning",
+      "outcome_ok": true,
+      "double_bookings": 0,
+      "false_confirmations": [],
+      "new_bookings": [
+        [
+          "2026-11-05",
+          "09:00",
+          "consultation"
+        ]
+      ],
+      "expected": [
+        [
+          "2026-11-05",
+          "09:00",
+          "consultation"
+        ]
+      ],
+      "error": null,
+      "transcript": [
+        {
+          "caller": "A",
+          "say": "guruvaram poddunna 9 ki checkup, I am Suresh, 9000000008",
+          "reply": "General consultation for Suresh on Thursday 5 November at 9:00 AM. Shall I confirm this booking?",
+          "tools": [
+            "prepare_booking"
+          ]
+        },
+        {
+          "caller": "A",
+          "say": "sare",
+          "reply": "Confirmed. Your General consultation is booked for Thursday 5 November at 9:00 AM. Your booking code is VG-G3TG. Please keep it to change or cancel later.",
+          "tools": [
+            "book_appointment"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "BK30",
+      "desc": "Hinglish dedh baje (1:30 PM)",
+      "outcome_ok": true,
+      "double_bookings": 0,
+      "false_confirmations": [],
+      "new_bookings": [
+        [
+          "2026-11-03",
+          "13:30",
+          "vaccination"
+        ]
+      ],
+      "expected": [
+        [
+          "2026-11-03",
+          "13:30",
+          "vaccination"
+        ]
+      ],
+      "error": null,
+      "transcript": [
+        {
+          "caller": "A",
+          "say": "kal dedh baje vaccination, I'm Farah, 9000000030",
+          "reply": "Vaccination for Farah on Tuesday 3 November at 1:30 PM. Shall I confirm this booking?",
+          "tools": [
+            "prepare_booking"
+          ]
+        },
+        {
+          "caller": "A",
+          "say": "ji haan",
+          "reply": "Confirmed. Your Vaccination is booked for Tuesday 3 November at 1:30 PM. Your booking code is VG-5BMT. Please keep it to change or cancel later.",
+          "tools": [
+            "book_appointment"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "BK09",
+      "desc": "conflict, caller picks an offered alternative",
+      "outcome_ok": true,
+      "double_bookings": 0,
+      "false_confirmations": [],
+      "new_bookings": [
+        [
+          "2026-11-03",
+          "10:30",
+          "consultation"
+        ]
+      ],
+      "expected": [
+        [
+          "2026-11-03",
+          "10:30",
+          "consultation"
+        ]
+      ],
+      "error": null,
+      "transcript": [
+        {
+          "caller": "A",
+          "say": "consultation tomorrow at 10am, my name is Ravi, 9000000009",
+          "reply": "That time is already taken. The nearest free times are Tuesday 3 November at 9:00 AM, 9:30 AM, 10:30 AM.",
+          "tools": [
+            "prepare_booking"
+          ]
+        },
+        {
+          "caller": "A",
+          "say": "10:30 then",
+          "reply": "General consultation for Ravi on Tuesday 3 November at 10:30 AM. Shall I confirm this booking?",
+          "tools": [
+            "prepare_booking"
+          ]
+        },
+        {
+          "caller": "A",
+          "say": "yes",
+          "reply": "Confirmed. Your General consultation is booked for Tuesday 3 November at 10:30 AM. Your booking code is VG-5R6T. Please keep it to change or cancel later.",
+          "tools": [
+            "book_appointment"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "BK10",
+      "desc": "conflict, caller gives up",
+      "outcome_ok": true,
+      "double_bookings": 0,
+      "false_confirmations": [],
+      "new_bookings": [],
+      "expected": [],
+      "error": null,
+      "transcript": [
+        {
+          "caller": "A",
+          "say": "consultation tomorrow at 10am, my name is Ravi, 9000000010",
+          "reply": "That time is already taken. The nearest free times are Tuesday 3 November at 9:00 AM, 9:30 AM, 10:30 AM.",
+          "tools": [
+            "prepare_booking"
+          ]
+        },
+        {
+          "caller": "A",
+          "say": "no thanks, bye",
+          "reply": "I can check free slots, book an appointment, or answer questions about the clinic. How can I help?",
+          "tools": []
+        }
+      ]
+    },
+    {
+      "id": "BK11",
+      "desc": "partial overlap with a 60-minute booking",
+      "outcome_ok": true,
+      "double_bookings": 0,
+      "false_confirmations": [],
+      "new_bookings": [],
+      "expected": [],
+      "error": null,
+      "transcript": [
+        {
+          "caller": "A",
+          "say": "consultation tomorrow at 10:30, my name is Ravi, 9000000011",
+          "reply": "That time is already taken. The nearest free times are Tuesday 3 November at 9:30 AM, 11:00 AM, 11:30 AM.",
+          "tools": [
+            "prepare_booking"
+          ]
+        },
+        {
+          "caller": "A",
+          "say": "yes",
+          "reply": "I can check free slots, book an appointment, or answer questions about the clinic. How can I help?",
+          "tools": []
+        }
+      ]
+    },
+    {
+      "id": "BK12",
+      "desc": "two callers read back the same slot; first yes wins",
+      "outcome_ok": true,
+      "double_bookings": 0,
+      "false_confirmations": [],
+      "new_bookings": [
+        [
+          "2026-11-03",
+          "15:00",
+          "consultation"
+        ]
+      ],
+      "expected": [
+        [
+          "2026-11-03",
+          "15:00",
+          "consultation"
+        ]
+      ],
+      "error": null,
+      "transcript": [
+        {
+          "caller": "A",
+          "say": "consultation tomorrow at 3 pm, my name is Asha, 9000000012",
+          "reply": "General consultation for Asha on Tuesday 3 November at 3:00 PM. Shall I confirm this booking?",
+          "tools": [
+            "prepare_booking"
+          ]
+        },
+        {
+          "caller": "B",
+          "say": "consultation tomorrow at 3 pm, my name is Bala, 9000000112",
+          "reply": "General consultation for Bala on Tuesday 3 November at 3:00 PM. Shall I confirm this booking?",
+          "tools": [
+            "prepare_booking"
+          ]
+        },
+        {
+          "caller": "A",
+          "say": "yes",
+          "reply": "Confirmed. Your General consultation is booked for Tuesday 3 November at 3:00 PM. Your booking code is VG-G6SM. Please keep it to change or cancel later.",
+          "tools": [
+            "book_appointment"
+          ]
+        },
+        {
+          "caller": "B",
+          "say": "yes",
+          "reply": "The booking was not made. That time is already taken. The nearest free times are Tuesday 3 November at 2:00 PM, 2:30 PM, 3:30 PM.",
+          "tools": [
+            "book_appointment"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "BK13",
+      "desc": "two callers, second caller says yes first",
+      "outcome_ok": true,
+      "double_bookings": 0,
+      "false_confirmations": [],
+      "new_bookings": [
+        [
+          "2026-11-03",
+          "11:00",
+          "vaccination"
+        ]
+      ],
+      "expected": [
+        [
+          "2026-11-03",
+          "11:00",
+          "vaccination"
+        ]
+      ],
+      "error": null,
+      "transcript": [
+        {
+          "caller": "A",
+          "say": "vaccination tomorrow at 11am, my name is Asha, 9000000013",
+          "reply": "Vaccination for Asha on Tuesday 3 November at 11:00 AM. Shall I confirm this booking?",
+          "tools": [
+            "prepare_booking"
+          ]
+        },
+        {
+          "caller": "B",
+          "say": "vaccination tomorrow at 11am, my name is Bala, 9000000113",
+          "reply": "Vaccination for Bala on Tuesday 3 November at 11:00 AM. Shall I confirm this booking?",
+          "tools": [
+            "prepare_booking"
+          ]
+        },
+        {
+          "caller": "B",
+          "say": "haan",
+          "reply": "Confirmed. Your Vaccination is booked for Tuesday 3 November at 11:00 AM. Your booking code is VG-7FAE. Please keep it to change or cancel later.",
+          "tools": [
+            "book_appointment"
+          ]
+        },
+        {
+          "caller": "A",
+          "say": "yes",
+          "reply": "The booking was not made. That time is already taken. The nearest free times are Tuesday 3 November at 10:00 AM, 10:30 AM, 11:30 AM.",
+          "tools": [
+            "book_appointment"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "BK29",
+      "desc": "cancelled slot becomes bookable again",
+      "outcome_ok": true,
+      "double_bookings": 0,
+      "false_confirmations": [],
+      "new_bookings": [
+        [
+          "2026-11-04",
+          "11:00",
+          "consultation"
+        ]
+      ],
+      "expected": [
+        [
+          "2026-11-04",
+          "11:00",
+          "consultation"
+        ]
+      ],
+      "error": null,
+      "transcript": [
+        {
+          "caller": "A",
+          "say": "I want to cancel my booking VG-V1KR, last four 5555",
+          "reply": "Cancel your General consultation on Wednesday 4 November at 11:00 AM. Are you sure?",
+          "tools": [
+            "verify_booking",
+            "cancel"
+          ]
+        },
+        {
+          "caller": "A",
+          "say": "yes",
+          "reply": "Done. Booking VG-V1KR is cancelled.",
+          "tools": [
+            "cancel"
+          ]
+        },
+        {
+          "caller": "B",
+          "say": "consultation on wednesday at 11am, my name is Nisha, 9000000029",
+          "reply": "General consultation for Nisha on Wednesday 4 November at 11:00 AM. Shall I confirm this booking?",
+          "tools": [
+            "prepare_booking"
+          ]
+        },
+        {
+          "caller": "B",
+          "say": "yes",
+          "reply": "Confirmed. Your General consultation is booked for Wednesday 4 November at 11:00 AM. Your booking code is VG-HHWS. Please keep it to change or cancel later.",
+          "tools": [
+            "book_appointment"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "BK14",
+      "desc": "past time today",
+      "outcome_ok": true,
+      "double_bookings": 0,
+      "false_confirmations": [],
+      "new_bookings": [],
+      "expected": [],
+      "error": null,
+      "transcript": [
+        {
+          "caller": "A",
+          "say": "consultation today at 7am, my name is Ravi, 9000000014",
+          "reply": "That time has already passed.",
+          "tools": [
+            "prepare_booking"
+          ]
+        },
+        {
+          "caller": "A",
+          "say": "yes",
+          "reply": "I can check free slots, book an appointment, or answer questions about the clinic. How can I help?",
+          "tools": []
+        }
+      ]
+    },
+    {
+      "id": "BK15",
+      "desc": "Sunday (closed)",
+      "outcome_ok": true,
+      "double_bookings": 0,
+      "false_confirmations": [],
+      "new_bookings": [],
+      "expected": [],
+      "error": null,
+      "transcript": [
+        {
+          "caller": "A",
+          "say": "consultation on sunday at 10am, my name is Ravi, 9000000015",
+          "reply": "We are closed on Sunday. The nearest free times are Monday 9 November at 9:00 AM, 9:30 AM, 10:00 AM.",
+          "tools": [
+            "prepare_booking"
+          ]
+        },
+        {
+          "caller": "A",
+          "say": "yes",
+          "reply": "I can check free slots, book an appointment, or answer questions about the clinic. How can I help?",
+          "tools": []
+        }
+      ]
+    },
+    {
+      "id": "BK16",
+      "desc": "after closing time",
+      "outcome_ok": true,
+      "double_bookings": 0,
+      "false_confirmations": [],
+      "new_bookings": [],
+      "expected": [],
+      "error": null,
+      "transcript": [
+        {
+          "caller": "A",
+          "say": "consultation tomorrow at 7:30 pm, my name is Ravi, 9000000016",
+          "reply": "On Tuesday we are open 09:00 to 18:00. The nearest free times are Tuesday 3 November at 4:30 PM, 5:00 PM, 5:30 PM.",
+          "tools": [
+            "prepare_booking"
+          ]
+        },
+        {
+          "caller": "A",
+          "say": "yes",
+          "reply": "I can check free slots, book an appointment, or answer questions about the clinic. How can I help?",
+          "tools": []
+        }
+      ]
+    },
+    {
+      "id": "BK17",
+      "desc": "off-grid time",
+      "outcome_ok": true,
+      "double_bookings": 0,
+      "false_confirmations": [],
+      "new_bookings": [],
+      "expected": [],
+      "error": null,
+      "transcript": [
+        {
+          "caller": "A",
+          "say": "consultation tomorrow at 10:15, my name is Ravi, 9000000017",
+          "reply": "Appointments start every 30 minutes, e.g. 10:00 or 10:30. The nearest free times are Tuesday 3 November at 9:30 AM, 10:00 AM, 10:30 AM.",
+          "tools": [
+            "prepare_booking"
+          ]
+        },
+        {
+          "caller": "A",
+          "say": "yes",
+          "reply": "I can check free slots, book an appointment, or answer questions about the clinic. How can I help?",
+          "tools": []
+        }
+      ]
+    },
+    {
+      "id": "BK22",
+      "desc": "60-minute service would run past closing",
+      "outcome_ok": true,
+      "double_bookings": 0,
+      "false_confirmations": [],
+      "new_bookings": [],
+      "expected": [],
+      "error": null,
+      "transcript": [
+        {
+          "caller": "A",
+          "say": "full body checkup tomorrow at 5:30 pm, my name is Ravi, 9000000022",
+          "reply": "On Tuesday we are open 09:00 to 18:00. The nearest free times are Tuesday 3 November at 4:00 PM, 4:30 PM, 5:00 PM.",
+          "tools": [
+            "prepare_booking"
+          ]
+        },
+        {
+          "caller": "A",
+          "say": "yes",
+          "reply": "I can check free slots, book an appointment, or answer questions about the clinic. How can I help?",
+          "tools": []
+        }
+      ]
+    },
+    {
+      "id": "BK23",
+      "desc": "beyond the 30-day booking window",
+      "outcome_ok": true,
+      "double_bookings": 0,
+      "false_confirmations": [],
+      "new_bookings": [],
+      "expected": [],
+      "error": null,
+      "transcript": [
+        {
+          "caller": "A",
+          "say": "consultation on 25th december at 10am, my name is Ravi, 9000000023",
+          "reply": "We only take bookings up to 30 days ahead.",
+          "tools": [
+            "prepare_booking"
+          ]
+        },
+        {
+          "caller": "A",
+          "say": "yes",
+          "reply": "I can check free slots, book an appointment, or answer questions about the clinic. How can I help?",
+          "tools": []
+        }
+      ]
+    },
+    {
+      "id": "BK18",
+      "desc": "caller says no at read-back",
+      "outcome_ok": true,
+      "double_bookings": 0,
+      "false_confirmations": [],
+      "new_bookings": [],
+      "expected": [],
+      "error": null,
+      "transcript": [
+        {
+          "caller": "A",
+          "say": "consultation tomorrow at 10am, my name is Ravi, 9000000018",
+          "reply": "General consultation for Ravi on Tuesday 3 November at 10:00 AM. Shall I confirm this booking?",
+          "tools": [
+            "prepare_booking"
+          ]
+        },
+        {
+          "caller": "A",
+          "say": "no",
+          "reply": "No problem, nothing is booked. What would you like to change?",
+          "tools": []
+        }
+      ]
+    },
+    {
+      "id": "BK19",
+      "desc": "caller says nahi at read-back",
+      "outcome_ok": true,
+      "double_bookings": 0,
+      "false_confirmations": [],
+      "new_bookings": [],
+      "expected": [],
+      "error": null,
+      "transcript": [
+        {
+          "caller": "A",
+          "say": "kal subah 10 baje consultation, I'm Ravi, 9000000019",
+          "reply": "General consultation for Ravi on Tuesday 3 November at 10:00 AM. Shall I confirm this booking?",
+          "tools": [
+            "prepare_booking"
+          ]
+        },
+        {
+          "caller": "A",
+          "say": "nahi",
+          "reply": "No problem, nothing is booked. What would you like to change?",
+          "tools": []
+        }
+      ]
+    },
+    {
+      "id": "BK20",
+      "desc": "correction after read-back, then yes",
+      "outcome_ok": true,
+      "double_bookings": 0,
+      "false_confirmations": [],
+      "new_bookings": [
+        [
+          "2026-11-03",
+          "11:30",
+          "consultation"
+        ]
+      ],
+      "expected": [
+        [
+          "2026-11-03",
+          "11:30",
+          "consultation"
+        ]
+      ],
+      "error": null,
+      "transcript": [
+        {
+          "caller": "A",
+          "say": "consultation tomorrow at 10am, my name is Ravi, 9000000020",
+          "reply": "General consultation for Ravi on Tuesday 3 November at 10:00 AM. Shall I confirm this booking?",
+          "tools": [
+            "prepare_booking"
+          ]
+        },
+        {
+          "caller": "A",
+          "say": "actually make it 11:30",
+          "reply": "General consultation for Ravi on Tuesday 3 November at 11:30 AM. Shall I confirm this booking?",
+          "tools": [
+            "prepare_booking"
+          ]
+        },
+        {
+          "caller": "A",
+          "say": "yes",
+          "reply": "Confirmed. Your General consultation is booked for Tuesday 3 November at 11:30 AM. Your booking code is VG-CBGY. Please keep it to change or cancel later.",
+          "tools": [
+            "book_appointment"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "BK21",
+      "desc": "unclear answer, then yes",
+      "outcome_ok": true,
+      "double_bookings": 0,
+      "false_confirmations": [],
+      "new_bookings": [
+        [
+          "2026-11-03",
+          "10:00",
+          "consultation"
+        ]
+      ],
+      "expected": [
+        [
+          "2026-11-03",
+          "10:00",
+          "consultation"
+        ]
+      ],
+      "error": null,
+      "transcript": [
+        {
+          "caller": "A",
+          "say": "consultation tomorrow at 10am, my name is Ravi, 9000000021",
+          "reply": "General consultation for Ravi on Tuesday 3 November at 10:00 AM. Shall I confirm this booking?",
+          "tools": [
+            "prepare_booking"
+          ]
+        },
+        {
+          "caller": "A",
+          "say": "hmm",
+          "reply": "Please say yes to confirm, or tell me what to change.",
+          "tools": []
+        },
+        {
+          "caller": "A",
+          "say": "yes",
+          "reply": "Confirmed. Your General consultation is booked for Tuesday 3 November at 10:00 AM. Your booking code is VG-TXNP. Please keep it to change or cancel later.",
+          "tools": [
+            "book_appointment"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "BK24",
+      "desc": "verified customer cancels own booking",
+      "outcome_ok": true,
+      "double_bookings": 0,
+      "false_confirmations": [],
+      "new_bookings": [],
+      "expected": [],
+      "error": null,
+      "transcript": [
+        {
+          "caller": "A",
+          "say": "I want to cancel my booking VG-V1KR, last four 5555",
+          "reply": "Cancel your General consultation on Wednesday 4 November at 11:00 AM. Are you sure?",
+          "tools": [
+            "verify_booking",
+            "cancel"
+          ]
+        },
+        {
+          "caller": "A",
+          "say": "yes",
+          "reply": "Done. Booking VG-V1KR is cancelled.",
+          "tools": [
+            "cancel"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "BK25",
+      "desc": "customer starts cancelling, then says no",
+      "outcome_ok": true,
+      "double_bookings": 0,
+      "false_confirmations": [],
+      "new_bookings": [],
+      "expected": [],
+      "error": null,
+      "transcript": [
+        {
+          "caller": "A",
+          "say": "cancel VG-V1KR, last four 5555",
+          "reply": "Cancel your General consultation on Wednesday 4 November at 11:00 AM. Are you sure?",
+          "tools": [
+            "verify_booking",
+            "cancel"
+          ]
+        },
+        {
+          "caller": "A",
+          "say": "no, keep it",
+          "reply": "Okay, I haven't changed anything.",
+          "tools": []
+        }
+      ]
+    },
+    {
+      "id": "BK26",
+      "desc": "Tenglish reschedule of own booking",
+      "outcome_ok": true,
+      "double_bookings": 0,
+      "false_confirmations": [],
+      "new_bookings": [],
+      "expected": [],
+      "error": null,
+      "transcript": [
+        {
+          "caller": "A",
+          "say": "reschedule VG-V1KR 5555 to repu 3 ki",
+          "reply": "Move your General consultation from Wednesday 4 November at 11:00 AM to Tuesday 3 November at 3:00 PM. Shall I confirm?",
+          "tools": [
+            "verify_booking",
+            "reschedule"
+          ]
+        },
+        {
+          "caller": "A",
+          "say": "avunu",
+          "reply": "Done. Your General consultation is now on Tuesday 3 November at 3:00 PM.",
+          "tools": [
+            "reschedule"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "BK27",
+      "desc": "reschedule into a taken slot is refused",
+      "outcome_ok": true,
+      "double_bookings": 0,
+      "false_confirmations": [],
+      "new_bookings": [],
+      "expected": [],
+      "error": null,
+      "transcript": [
+        {
+          "caller": "A",
+          "say": "reschedule VG-V1KR 5555 to tomorrow 3 pm",
+          "reply": "That time is already taken. The nearest free times are Tuesday 3 November at 2:00 PM, 2:30 PM, 3:30 PM.",
+          "tools": [
+            "verify_booking",
+            "reschedule"
+          ]
+        },
+        {
+          "caller": "A",
+          "say": "yes",
+          "reply": "Which new date and time would you like?",
+          "tools": []
+        }
+      ]
+    },
+    {
+      "id": "BK28",
+      "desc": "wrong last four digits cannot cancel",
+      "outcome_ok": true,
+      "double_bookings": 0,
+      "false_confirmations": [],
+      "new_bookings": [],
+      "expected": [],
+      "error": null,
+      "transcript": [
+        {
+          "caller": "A",
+          "say": "cancel VG-V1KR, last four 1234",
+          "reply": "That booking code and phone number don't match our records.",
+          "tools": [
+            "verify_booking [BLOCKED]"
+          ]
+        },
+        {
+          "caller": "A",
+          "say": "yes",
+          "reply": "I can check free slots, book an appointment, or answer questions about the clinic. How can I help?",
+          "tools": []
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,178 @@
+# Booking correctness scenarios. Clock: Mon 2 Nov 2026 08:00 (tomorrow = Tue 3 Nov).
+# Each scenario runs on a fresh DB with `seed`, then replays `steps` (each caller is a separate call/session).
+# Measured (never hardcoded): double bookings (overlapping confirmed rows), false confirmations (a reply that
+# claims success in a turn where no write tool succeeded), and whether the final DB matches `expect`.
+# expect.new_bookings: confirmed bookings created by the scenario as [date, time, service].
+# expect.seeded: final {status, start} of seeded bookings by code.
+
+cases:
+  # ---------------- straightforward bookings ----------------
+  - id: BK01
+    desc: English one-shot booking
+    steps: [{caller: A, say: "Book a consultation tomorrow at 10am, my name is Ravi, 9000000001"}, {caller: A, say: "yes"}]
+    expect: {new_bookings: [["2026-11-03", "10:00", consultation]]}
+  - id: BK02
+    desc: Tenglish evening booking
+    steps: [{caller: A, say: "repu sayantram 5 ki consultation kavali, my name is Lakshmi, 9000000002"}, {caller: A, say: "avunu"}]
+    expect: {new_bookings: [["2026-11-03", "17:00", consultation]]}
+  - id: BK03
+    desc: Hinglish half-past booking
+    steps: [{caller: A, say: "kal subah saadhe das baje vaccination, I am Priya, 9000000003"}, {caller: A, say: "haan ji"}]
+    expect: {new_bookings: [["2026-11-03", "10:30", vaccination]]}
+  - id: BK04
+    desc: details collected one at a time
+    steps:
+      - {caller: A, say: "I need an appointment"}
+      - {caller: A, say: "Kiran"}
+      - {caller: A, say: "9000000004"}
+      - {caller: A, say: "full body checkup"}
+      - {caller: A, say: "day after tomorrow"}
+      - {caller: A, say: "11am"}
+      - {caller: A, say: "yes"}
+    expect: {new_bookings: [["2026-11-04", "11:00", full_checkup]]}
+  - id: BK05
+    desc: Hinglish day-after-tomorrow afternoon
+    steps: [{caller: A, say: "parso shaam 4 baje consultation, I'm Anil, 9000000005"}, {caller: A, say: "theek hai, haan"}]
+    expect: {new_bookings: [["2026-11-04", "16:00", consultation]]}
+  - id: BK06
+    desc: weekday name
+    steps: [{caller: A, say: "Book a vaccination on friday at 3 pm, my name is Rohan, 9000000006"}, {caller: A, say: "yes please"}]
+    expect: {new_bookings: [["2026-11-06", "15:00", vaccination]]}
+  - id: BK07
+    desc: Saturday short hours, last valid slot region
+    steps: [{caller: A, say: "consultation on saturday at 1 pm, my name is Divya, 9000000007"}, {caller: A, say: "yes"}]
+    expect: {new_bookings: [["2026-11-07", "13:00", consultation]]}
+  - id: BK08
+    desc: Tenglish weekday morning
+    steps: [{caller: A, say: "guruvaram poddunna 9 ki checkup, I am Suresh, 9000000008"}, {caller: A, say: "sare"}]
+    expect: {new_bookings: [["2026-11-05", "09:00", consultation]]}
+  - id: BK30
+    desc: Hinglish dedh baje (1:30 PM)
+    steps: [{caller: A, say: "kal dedh baje vaccination, I'm Farah, 9000000030"}, {caller: A, say: "ji haan"}]
+    expect: {new_bookings: [["2026-11-03", "13:30", vaccination]]}
+
+  # ---------------- conflicts and concurrency ----------------
+  - id: BK09
+    desc: conflict, caller picks an offered alternative
+    seed: [{name: Meera, last4: "4821", code: VG-SEED, date: "2026-11-03", time: "10:00", service: consultation}]
+    steps:
+      - {caller: A, say: "consultation tomorrow at 10am, my name is Ravi, 9000000009"}
+      - {caller: A, say: "10:30 then"}
+      - {caller: A, say: "yes"}
+    expect: {new_bookings: [["2026-11-03", "10:30", consultation]], seeded: {VG-SEED: {status: confirmed}}}
+  - id: BK10
+    desc: conflict, caller gives up
+    seed: [{name: Meera, last4: "4821", code: VG-SEED, date: "2026-11-03", time: "10:00", service: consultation}]
+    steps:
+      - {caller: A, say: "consultation tomorrow at 10am, my name is Ravi, 9000000010"}
+      - {caller: A, say: "no thanks, bye"}
+    expect: {new_bookings: []}
+  - id: BK11
+    desc: partial overlap with a 60-minute booking
+    seed: [{name: Arjun, last4: "7395", code: VG-SEED, date: "2026-11-03", time: "10:00", service: full_checkup}]
+    steps: [{caller: A, say: "consultation tomorrow at 10:30, my name is Ravi, 9000000011"}, {caller: A, say: "yes"}]
+    expect: {new_bookings: []}
+  - id: BK12
+    desc: two callers read back the same slot; first yes wins
+    steps:
+      - {caller: A, say: "consultation tomorrow at 3 pm, my name is Asha, 9000000012"}
+      - {caller: B, say: "consultation tomorrow at 3 pm, my name is Bala, 9000000112"}
+      - {caller: A, say: "yes"}
+      - {caller: B, say: "yes"}
+    expect: {new_bookings: [["2026-11-03", "15:00", consultation]]}
+  - id: BK13
+    desc: two callers, second caller says yes first
+    steps:
+      - {caller: A, say: "vaccination tomorrow at 11am, my name is Asha, 9000000013"}
+      - {caller: B, say: "vaccination tomorrow at 11am, my name is Bala, 9000000113"}
+      - {caller: B, say: "haan"}
+      - {caller: A, say: "yes"}
+    expect: {new_bookings: [["2026-11-03", "11:00", vaccination]]}
+  - id: BK29
+    desc: cancelled slot becomes bookable again
+    seed: [{name: Vikram, last4: "5555", code: VG-V1KR, date: "2026-11-04", time: "11:00", service: consultation}]
+    steps:
+      - {caller: A, say: "I want to cancel my booking VG-V1KR, last four 5555"}
+      - {caller: A, say: "yes"}
+      - {caller: B, say: "consultation on wednesday at 11am, my name is Nisha, 9000000029"}
+      - {caller: B, say: "yes"}
+    expect: {new_bookings: [["2026-11-04", "11:00", consultation]], seeded: {VG-V1KR: {status: cancelled}}}
+
+  # ---------------- invalid requests ----------------
+  - id: BK14
+    desc: past time today
+    steps: [{caller: A, say: "consultation today at 7am, my name is Ravi, 9000000014"}, {caller: A, say: "yes"}]
+    expect: {new_bookings: []}
+  - id: BK15
+    desc: Sunday (closed)
+    steps: [{caller: A, say: "consultation on sunday at 10am, my name is Ravi, 9000000015"}, {caller: A, say: "yes"}]
+    expect: {new_bookings: []}
+  - id: BK16
+    desc: after closing time
+    steps: [{caller: A, say: "consultation tomorrow at 7:30 pm, my name is Ravi, 9000000016"}, {caller: A, say: "yes"}]
+    expect: {new_bookings: []}
+  - id: BK17
+    desc: off-grid time
+    steps: [{caller: A, say: "consultation tomorrow at 10:15, my name is Ravi, 9000000017"}, {caller: A, say: "yes"}]
+    expect: {new_bookings: []}
+  - id: BK22
+    desc: 60-minute service would run past closing
+    steps: [{caller: A, say: "full body checkup tomorrow at 5:30 pm, my name is Ravi, 9000000022"}, {caller: A, say: "yes"}]
+    expect: {new_bookings: []}
+  - id: BK23
+    desc: beyond the 30-day booking window
+    steps: [{caller: A, say: "consultation on 25th december at 10am, my name is Ravi, 9000000023"}, {caller: A, say: "yes"}]
+    expect: {new_bookings: []}
+
+  # ---------------- confirmation behaviour ----------------
+  - id: BK18
+    desc: caller says no at read-back
+    steps: [{caller: A, say: "consultation tomorrow at 10am, my name is Ravi, 9000000018"}, {caller: A, say: "no"}]
+    expect: {new_bookings: []}
+  - id: BK19
+    desc: caller says nahi at read-back
+    steps: [{caller: A, say: "kal subah 10 baje consultation, I'm Ravi, 9000000019"}, {caller: A, say: "nahi"}]
+    expect: {new_bookings: []}
+  - id: BK20
+    desc: correction after read-back, then yes
+    steps:
+      - {caller: A, say: "consultation tomorrow at 10am, my name is Ravi, 9000000020"}
+      - {caller: A, say: "actually make it 11:30"}
+      - {caller: A, say: "yes"}
+    expect: {new_bookings: [["2026-11-03", "11:30", consultation]]}
+  - id: BK21
+    desc: unclear answer, then yes
+    steps:
+      - {caller: A, say: "consultation tomorrow at 10am, my name is Ravi, 9000000021"}
+      - {caller: A, say: "hmm"}
+      - {caller: A, say: "yes"}
+    expect: {new_bookings: [["2026-11-03", "10:00", consultation]]}
+
+  # ---------------- customer changes ----------------
+  - id: BK24
+    desc: verified customer cancels own booking
+    seed: [{name: Vikram, last4: "5555", code: VG-V1KR, date: "2026-11-04", time: "11:00", service: consultation}]
+    steps: [{caller: A, say: "I want to cancel my booking VG-V1KR, last four 5555"}, {caller: A, say: "yes"}]
+    expect: {new_bookings: [], seeded: {VG-V1KR: {status: cancelled}}}
+  - id: BK25
+    desc: customer starts cancelling, then says no
+    seed: [{name: Vikram, last4: "5555", code: VG-V1KR, date: "2026-11-04", time: "11:00", service: consultation}]
+    steps: [{caller: A, say: "cancel VG-V1KR, last four 5555"}, {caller: A, say: "no, keep it"}]
+    expect: {new_bookings: [], seeded: {VG-V1KR: {status: confirmed}}}
+  - id: BK26
+    desc: Tenglish reschedule of own booking
+    seed: [{name: Vikram, last4: "5555", code: VG-V1KR, date: "2026-11-04", time: "11:00", service: consultation}]
+    steps: [{caller: A, say: "reschedule VG-V1KR 5555 to repu 3 ki"}, {caller: A, say: "avunu"}]
+    expect: {new_bookings: [], seeded: {VG-V1KR: {status: confirmed, start: "2026-11-03T15:00:00"}}}
+  - id: BK27
+    desc: reschedule into a taken slot is refused
+    seed:
+      - {name: Vikram, last4: "5555", code: VG-V1KR, date: "2026-11-04", time: "11:00", service: consultation}
+      - {name: Other, last4: "1212", code: VG-OTHR, date: "2026-11-03", time: "15:00", service: consultation}
+    steps: [{caller: A, say: "reschedule VG-V1KR 5555 to tomorrow 3 pm"}, {caller: A, say: "yes"}]
+    expect: {new_bookings: [], seeded: {VG-V1KR: {status: confirmed, start: "2026-11-04T11:00:00"}, VG-OTHR: {status: confirmed}}}
+  - id: BK28
+    desc: wrong last four digits cannot cancel
+    seed: [{name: Vikram, last4: "5555", code: VG-V1KR, date: "2026-11-04", time: "11:00", service: consultation}]
+    steps: [{caller: A, say: "cancel VG-V1KR, last four 1234"}, {caller: A, say: "yes"}]
+    expect: {new_bookings: [], seeded: {VG-V1KR: {status: confirmed}}}

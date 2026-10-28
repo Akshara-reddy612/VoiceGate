@@ -1,0 +1,18 @@
+{
+  "suite": "codemix",
+  "measured_with": "rule-based normalizer on typed text (offline, no ASR)",
+  "total": 44,
+  "correct": 44,
+  "accuracy": 1.0,
+  "by_lang": {
+    "tenglish": 1.0,
+    "hinglish": 1.0,
+    "english": 1.0
+  },
+  "field_accuracy": {
+    "date": 1.0,
+    "time": 1.0,
+    "service": 1.0
+  },
+  "failures": []
+}

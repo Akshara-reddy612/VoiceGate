@@ -56,7 +56,8 @@ FAQ_TOPICS = {
     "payment": r"\b(pay|payment|upi|cash|card)\b",
     "cancellation": r"\b(cancellation policy|refund)\b",
 }
-CODE_RE = re.compile(r"\bVG-?([A-HJ-NP-Z2-9]{4})\b", re.IGNORECASE)
+# Lenient on purpose: callers/ASR may say "one" or "O". verify_booking still needs an exact DB match.
+CODE_RE = re.compile(r"\bVG-?([A-Z0-9]{4})\b", re.IGNORECASE)
 LAST4_RE = re.compile(r"(?<![\d:])(\d{4})(?![\d:])")
 CANCEL_WORDS = re.compile(r"\b(cancel|radd)\b")
 RESCHEDULE_WORDS = re.compile(r"\b(reschedule|move|shift|postpone|prepone|change my|change the booking)\b")

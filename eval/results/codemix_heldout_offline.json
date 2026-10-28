@@ -1,0 +1,315 @@
+{
+  "suite": "codemix",
+  "measured_with": "rule-based normalizer on typed text (offline, no ASR)",
+  "total": 20,
+  "correct": 8,
+  "accuracy": 0.4,
+  "by_lang": {
+    "tenglish": 0.571,
+    "hinglish": 0.571,
+    "english": 0.0
+  },
+  "field_accuracy": {
+    "date": 0.7,
+    "time": 0.7,
+    "service": 0.9
+  },
+  "failures": [
+    {
+      "id": "HO02",
+      "lang": "tenglish",
+      "text": "rapu 10 ki",
+      "expected": {
+        "date": "2026-11-03",
+        "time": "10:00",
+        "service": null
+      },
+      "got": {
+        "date": null,
+        "time": "10:00",
+        "service": null
+      },
+      "expected_issue": null,
+      "issues": [],
+      "fields_ok": {
+        "date": false,
+        "time": true,
+        "service": true
+      },
+      "issue_ok": true,
+      "correct": false
+    },
+    {
+      "id": "HO04",
+      "lang": "tenglish",
+      "text": "next week tuesday morning 9 ki",
+      "expected": {
+        "date": "2026-11-10",
+        "time": "09:00",
+        "service": null
+      },
+      "got": {
+        "date": "2026-11-03",
+        "time": "09:00",
+        "service": null
+      },
+      "expected_issue": null,
+      "issues": [],
+      "fields_ok": {
+        "date": false,
+        "time": true,
+        "service": true
+      },
+      "issue_ok": true,
+      "correct": false
+    },
+    {
+      "id": "HO07",
+      "lang": "tenglish",
+      "text": "reepu sayantram aidu ki tika",
+      "expected": {
+        "date": "2026-11-03",
+        "time": "17:00",
+        "service": "vaccination"
+      },
+      "got": {
+        "date": null,
+        "time": "17:00",
+        "service": null
+      },
+      "expected_issue": null,
+      "issues": [],
+      "fields_ok": {
+        "date": false,
+        "time": true,
+        "service": false
+      },
+      "issue_ok": true,
+      "correct": false
+    },
+    {
+      "id": "HO11",
+      "lang": "hinglish",
+      "text": "kal 4 baje shaam ko teeka lagwana hai",
+      "expected": {
+        "date": "2026-11-03",
+        "time": "16:00",
+        "service": "vaccination"
+      },
+      "got": {
+        "date": "2026-11-03",
+        "time": "16:00",
+        "service": null
+      },
+      "expected_issue": null,
+      "issues": [],
+      "fields_ok": {
+        "date": true,
+        "time": true,
+        "service": false
+      },
+      "issue_ok": true,
+      "correct": false
+    },
+    {
+      "id": "HO13",
+      "lang": "hinglish",
+      "text": "agle hafte mangal ko 10 baje",
+      "expected": {
+        "date": "2026-11-10",
+        "time": "10:00",
+        "service": null
+      },
+      "got": {
+        "date": null,
+        "time": "10:00",
+        "service": null
+      },
+      "expected_issue": null,
+      "issues": [],
+      "fields_ok": {
+        "date": false,
+        "time": true,
+        "service": true
+      },
+      "issue_ok": true,
+      "correct": false
+    },
+    {
+      "id": "HO14",
+      "lang": "hinglish",
+      "text": "kal subah dus baje",
+      "expected": {
+        "date": "2026-11-03",
+        "time": "10:00",
+        "service": null
+      },
+      "got": {
+        "date": "2026-11-03",
+        "time": null,
+        "service": null
+      },
+      "expected_issue": null,
+      "issues": [
+        "needs_hour"
+      ],
+      "fields_ok": {
+        "date": true,
+        "time": false,
+        "service": true
+      },
+      "issue_ok": true,
+      "correct": false
+    },
+    {
+      "id": "HO15",
+      "lang": "english",
+      "text": "tmrw half past ten",
+      "expected": {
+        "date": "2026-11-03",
+        "time": "10:30",
+        "service": null
+      },
+      "got": {
+        "date": null,
+        "time": null,
+        "service": null
+      },
+      "expected_issue": null,
+      "issues": [],
+      "fields_ok": {
+        "date": false,
+        "time": false,
+        "service": true
+      },
+      "issue_ok": true,
+      "correct": false
+    },
+    {
+      "id": "HO16",
+      "lang": "english",
+      "text": "quarter to five tomorrow evening",
+      "expected": {
+        "date": "2026-11-03",
+        "time": "16:45",
+        "service": null
+      },
+      "got": {
+        "date": "2026-11-03",
+        "time": null,
+        "service": null
+      },
+      "expected_issue": null,
+      "issues": [
+        "needs_hour"
+      ],
+      "fields_ok": {
+        "date": true,
+        "time": false,
+        "service": true
+      },
+      "issue_ok": true,
+      "correct": false
+    },
+    {
+      "id": "HO17",
+      "lang": "english",
+      "text": "this friday at four in the afternoon",
+      "expected": {
+        "date": "2026-11-06",
+        "time": "16:00",
+        "service": null
+      },
+      "got": {
+        "date": "2026-11-06",
+        "time": null,
+        "service": null
+      },
+      "expected_issue": null,
+      "issues": [
+        "needs_hour"
+      ],
+      "fields_ok": {
+        "date": true,
+        "time": false,
+        "service": true
+      },
+      "issue_ok": true,
+      "correct": false
+    },
+    {
+      "id": "HO18",
+      "lang": "english",
+      "text": "the 4th at 11:30",
+      "expected": {
+        "date": "2026-11-04",
+        "time": "11:30",
+        "service": null
+      },
+      "got": {
+        "date": null,
+        "time": "11:30",
+        "service": null
+      },
+      "expected_issue": null,
+      "issues": [],
+      "fields_ok": {
+        "date": false,
+        "time": true,
+        "service": true
+      },
+      "issue_ok": true,
+      "correct": false
+    },
+    {
+      "id": "HO19",
+      "lang": "english",
+      "text": "10 tomorrow morning",
+      "expected": {
+        "date": "2026-11-03",
+        "time": "10:00",
+        "service": null
+      },
+      "got": {
+        "date": "2026-11-03",
+        "time": null,
+        "service": null
+      },
+      "expected_issue": null,
+      "issues": [
+        "needs_hour"
+      ],
+      "fields_ok": {
+        "date": true,
+        "time": false,
+        "service": true
+      },
+      "issue_ok": true,
+      "correct": false
+    },
+    {
+      "id": "HO20",
+      "lang": "english",
+      "text": "tomorrow 5pm or 6pm whichever is free",
+      "expected": {
+        "date": "2026-11-03",
+        "time": null,
+        "service": null
+      },
+      "got": {
+        "date": "2026-11-03",
+        "time": "17:00",
+        "service": null
+      },
+      "expected_issue": "ambiguous_time",
+      "issues": [],
+      "fields_ok": {
+        "date": true,
+        "time": false,
+        "service": true
+      },
+      "issue_ok": false,
+      "correct": false
+    }
+  ]
+}

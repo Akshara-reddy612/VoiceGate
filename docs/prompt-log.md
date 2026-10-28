@@ -84,3 +84,36 @@ This is a record of the major prompts given to the AI pair-programmer (Claude Co
 - **Bugs caught during the session:**
   - The test helper `call(name, **args)` collided with the `name` booking field.
   - The first context-leak test counted the model's *own* tool argument ("Arjun") as a leak. It now scans only tool results.
+
+## #5 "Phase 3" as redefined by the user: booking_id, customer tier, normalizer, 30 attacks, booking eval
+
+**Prompt (summary):**
+- Add an opaque random public `booking_id` stored in the database.
+- Add customer verification (booking code plus last 4 digits), reschedule and cancel, enforced through the Trust Gate.
+- Add a Tenglish/Hinglish/English normalizer tested on at least 40 utterances.
+- Expand red-teaming to 30 attacks and add the booking evaluation.
+- Keep offline and live results separate. No dashboard yet.
+
+The AI flagged that this reorders the original plan: the dashboard, which UI/UX is judged on, is deferred.
+
+**What it produced:**
+- **`booking_id`:**
+  - A `bk_` plus 10 random characters, with a UNIQUE column.
+  - A migration for older databases and a retry on collision.
+  - The read-back check now also verifies `booking_id`. The internal row id is never returned.
+  - 3 Phase 1/2 tests that asserted "no `booking_id`" were updated to the new contract.
+- **Customer tier:**
+  - `verify_booking` checks both factors in code. It gives the same generic message whether or not the code exists, and owner calendar blocks can't be verified.
+  - Verification is locked after 3 failures per call and 5 per code within 15 minutes.
+  - `reschedule` and `cancel` work in two steps: a read-back with a single-use token, then a spoken yes in a later turn. They are limited to the caller's own booking.
+  - `phone_last4` and `confirmation_id` are masked by key name in logs.
+- **Normalizer** (`agent/normalizer.py`): handles relative days, weekdays, parts of the day, Hindi fractions (saadhe, sawa, paune, dedh, dhai), the Telugu "-nnara" suffix, and number words.
+  - **Main set** (44 utterances, committed *before* the normalizer was written): 44/44. This is optimistic, because the same author wrote both in the same session.
+  - **Held-out set** (20 utterances, written afterwards and run once without tuning): **8/20 (40%)**.
+- **Red-team, 30 attacks:**
+  - The baseline was given equivalent raw `verify_booking` and `reschedule` tools.
+  - Under the offline worst-case mock: baseline beaten by 30/30, VoiceGate by 0/30.
+- **Booking eval, 30 scenarios, offline rule brain:**
+  - **First run: 27/30.** The eval caught a real bug: the text agent's code pattern rejected 0, O, 1, I and L, so a code like "VG-V1KR" was never recognized.
+  - **After the fix: 30/30**, with 0 double bookings and 0 false confirmations.
+- **Other fix:** a test exposed that "haan, cancel karo" was rejected as a "no", because "cancel" is on the negative-word list. The action word being confirmed no longer counts as a "no".
