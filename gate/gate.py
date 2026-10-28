@@ -81,7 +81,8 @@ class TrustGate:
         blocked = code in SECURITY_REJECTIONS
         if blocked:
             reason = f"rejected by tool: {code}"
-        self._audit(ctx, tool, args, blocked=blocked, reason=reason)
+        if blocked or reason or self.policy.tool(ctx.tier, tool).audit:
+            self._audit(ctx, tool, args, blocked=blocked, reason=reason)
         return GateResult(tool, redact_value(args), result, blocked, reason)
 
     def _audit(self, ctx: CallContext, tool: str, args: dict[str, Any], *, blocked: bool, reason: str) -> None:

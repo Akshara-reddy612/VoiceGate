@@ -19,6 +19,7 @@ class ToolPolicy(BaseModel):
     args: list[str]
     returns: dict[str, Any]
     require: list[str] = []
+    audit: bool = True  # False: allowed calls aren't logged (dashboard polling). Denials are always logged.
 
 
 class TierPolicy(BaseModel):

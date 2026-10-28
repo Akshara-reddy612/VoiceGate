@@ -1,4 +1,9 @@
+import os
+import tempfile
 from datetime import datetime
+
+# Importing api.main builds the app against VOICEGATE_DB_PATH: keep it out of the repo during tests.
+os.environ.setdefault("VOICEGATE_DB_PATH", os.path.join(tempfile.gettempdir(), "voicegate-pytest-default.db"))
 
 import pytest
 

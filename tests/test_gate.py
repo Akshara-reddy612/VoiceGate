@@ -36,8 +36,18 @@ def test_owner_tier_is_impossible_on_caller_channels(channel):
         assert not d.allowed and "not available on channel" in d.reason
 
 
-def test_owner_has_no_agent_tools_even_on_dashboard():
-    assert not authorize(POLICY, ctx(Tier.OWNER, Channel.DASHBOARD), "get_availability", {}).allowed
+def test_owner_dashboard_is_read_only():
+    # Owner reads go through the gate (dashboard channel only); no booking writes or customer tools.
+    owner = ctx(Tier.OWNER, Channel.DASHBOARD)
+    for tool in ["list_bookings", "list_events", "get_availability", "get_metrics"]:
+        assert authorize(POLICY, owner, tool, {}).allowed, tool
+    for tool in ["prepare_booking", "book_appointment", "cancel", "reschedule", "verify_booking"]:
+        assert not authorize(POLICY, owner, tool, {}).allowed, tool
+
+
+def test_owner_results_never_include_internal_ids_or_phone_digits():
+    spec = POLICY.tool(Tier.OWNER, "list_bookings").returns["bookings"]
+    assert "id" not in spec and "phone_last4" not in spec and "booking_id" in spec
 
 
 def test_public_cannot_use_dashboard_channel():

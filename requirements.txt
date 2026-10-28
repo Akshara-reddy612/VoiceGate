@@ -8,3 +8,8 @@ python-dotenv==1.2.4
 pytest==9.2.0
 # Windows has no system timezone database; zoneinfo needs this for Asia/Kolkata.
 tzdata==2026.6
+
+# API server (FastAPI is served by uvicorn)
+uvicorn==0.38.0
+# FastAPI TestClient (tests only)
+httpx==0.28.1

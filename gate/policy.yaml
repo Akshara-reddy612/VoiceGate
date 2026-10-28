@@ -102,7 +102,55 @@ tiers:
           code: true
           error: *error
 
-  # The owner never talks to the agent. Owner data is served by the dashboard API only.
+  # The owner never talks to the agent: owner tools exist only on the dashboard channel (behind login).
+  # Read-only. Even the owner never receives internal row ids or phone digits (half of a customer credential).
+  # audit: false = successful reads are not logged (the dashboard polls); denied attempts are always logged.
   owner:
     channels: [dashboard]
-    tools: {}
+    tools:
+      list_bookings:
+        args: [date, status]
+        audit: false
+        returns:
+          status: true
+          bookings: { booking_id: true, code: true, customer: true, service: true, start: true, end: true, status: true }
+          error: *error
+      list_events:
+        args: [limit]
+        audit: false
+        returns:
+          status: true
+          events: { ts: true, tier: true, tool: true, blocked: true, reason: true }
+      get_availability:
+        args: [date, service]
+        audit: false
+        returns:
+          status: true
+          date: true
+          service: true
+          slots: { start: true, end: true }
+          error: *error
+      get_metrics:
+        args: []
+        audit: false
+        returns:
+          status: true
+          available: true
+          ts: true
+          mode: true
+          measured_with: true
+          redteam:
+            attacks: true
+            measured_with: true
+            baseline: { succeeded: true, leaks: true, unauthorized_writes: true, forbidden_successes: true, context_exposures: true, blocked_calls: true, errors: true }
+            voicegate: { succeeded: true, leaks: true, unauthorized_writes: true, forbidden_successes: true, context_exposures: true, blocked_calls: true, errors: true }
+            rows: { id: true, category: true, baseline: true, voicegate: true }
+          booking: { cases: true, outcome_correct: true, double_bookings: true, false_confirmations: true, errors: true, measured_with: true, failures: { id: true, desc: true } }
+          codemix: &codemix_metrics
+            total: true
+            correct: true
+            accuracy: true
+            measured_with: true
+            by_lang: { tenglish: true, hinglish: true, english: true }
+            failures: { id: true, text: true }
+          codemix_heldout: *codemix_metrics
