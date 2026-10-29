@@ -81,6 +81,9 @@ button, input, select { font: inherit; color: inherit; }
 .grid { display: grid; gap: 16px; }
 .grid-2 { grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); }
 .grid-4 { grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); }
+.grid > .card + .card { margin-top: 0; } /* stacked-card spacing must not offset cards placed side by side */
+.split { grid-template-columns: minmax(0, 2fr) minmax(260px, 1fr); align-items: start; }
+@media (max-width: 900px) { .split { grid-template-columns: minmax(0, 1fr); } }
 .stat { padding: 14px 16px; }
 .stat .label { color: var(--muted); font-size: 0.8rem; }
 .stat .value { font-size: 1.6rem; font-weight: 700; font-variant-numeric: tabular-nums; }

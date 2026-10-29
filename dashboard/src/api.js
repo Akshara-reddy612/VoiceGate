@@ -20,11 +20,21 @@ export function setToken(token) {
 }
 
 export class ApiError extends Error {
-  constructor(status, message) {
+  constructor(status, message, kind = null, info = {}) {
     super(message);
     this.status = status;
+    this.kind = kind; // "provider_unavailable" | "provider_timeout" | "provider_error" for model-provider failures
+    this.info = info;
   }
 }
+
+export const isProviderError = (e) => Boolean(e?.kind?.startsWith("provider_"));
+export const PROVIDER_TITLE = {
+  provider_unavailable: "Model provider unavailable",
+  provider_quota: "Model quota exhausted",
+  provider_timeout: "Model provider timed out",
+  provider_error: "Model provider error",
+};
 
 export async function api(path, { method = "GET", body } = {}) {
   const headers = { "Content-Type": "application/json" };
@@ -39,7 +49,12 @@ export async function api(path, { method = "GET", body } = {}) {
   const data = await res.json().catch(() => ({}));
   if (!res.ok) {
     if (res.status === 401 && path !== "/api/login") window.dispatchEvent(new Event("voicegate:logout"));
-    throw new ApiError(res.status, typeof data.detail === "string" ? data.detail : `Request failed (${res.status})`);
+    const d = data.detail;
+    if (d && typeof d === "object" && d.message) {
+      const { kind, message, ...info } = d;
+      throw new ApiError(res.status, message, kind || null, info);
+    }
+    throw new ApiError(res.status, typeof d === "string" ? d : `Request failed (${res.status})`);
   }
   return data;
 }

@@ -247,3 +247,13 @@ def test_old_database_is_migrated_with_random_booking_ids(tmp_path):
     ids = [r[0] for r in connect(db).execute("SELECT booking_id FROM bookings")]
     assert len(set(ids)) == 2 and all(i.startswith("bk_") for i in ids)
     assert svc.create_booking(req(time="10:00")).ok  # old DB keeps working
+
+
+def test_unverified_write_leaves_no_confirmed_booking(svc, db_path, monkeypatch):
+    # Read-back fails after COMMIT: the caller is told "not booked", so the row must not stay confirmed.
+    monkeypatch.setattr(svc, "_read_back", lambda conn, rid: None)
+    assert svc.create_booking(req()).error.code == ErrorCode.WRITE_NOT_VERIFIED
+    statuses = [r[0] for r in connect(db_path).execute("SELECT status FROM bookings")]
+    assert statuses == ["failed"]
+    monkeypatch.undo()
+    assert svc.create_booking(req(name="Sita")).ok  # the slot was not left blocked by a phantom booking

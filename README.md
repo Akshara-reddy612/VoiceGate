@@ -29,13 +29,33 @@ Then open **http://127.0.0.1:8000** and sign in with your `OWNER_PASSWORD`.
 
 **While working on the UI:** run `uvicorn api.main:app --port 8000` in one terminal, then `cd dashboard && npm run dev` in another, and open http://localhost:5173. Vite proxies `/api` to port 8000.
 
-## 3. Other entry points
+## 3. Real-time voice calls (needs credentials)
+
+Set these in `.env`, with real values rather than the placeholders:
+- `LIVEKIT_URL`, `LIVEKIT_API_KEY`, `LIVEKIT_API_SECRET`: from a LiveKit Cloud project, under Settings → Keys.
+- `GOOGLE_API_KEY`: from Google AI Studio.
+
+Then run each command in its own terminal:
+
+```bash
+uvicorn api.main:app --host 127.0.0.1 --port 8000   # API + dashboard
+python -m agent.agent dev                           # voice worker (Gemini Live), joins dashboard calls
+```
+
+To make a call:
+1. Open http://127.0.0.1:8000 and sign in.
+2. Go to **Voice call** and press **Start call**.
+3. Allow the microphone.
+
+You call as a public caller. Every tool call goes through the Trust Gate, the agent reads the booking back, and it books only after you say yes. If a credential is missing, the page and the worker both name the missing variable.
+
+## 4. Other entry points
 
 ```bash
 pytest                                 # full suite, offline
 python -m agent.text_agent             # terminal caller (Gemini if GOOGLE_API_KEY is set, else the offline rule brain)
 python -m eval.run_all --model gemini  # live Gemini evals (needs GOOGLE_API_KEY); saved apart from offline results
-python -m agent.agent console          # voice in the terminal (needs LIVEKIT_* and GOOGLE_API_KEY), UNTESTED
+python -m agent.agent console          # voice in the terminal (needs GOOGLE_API_KEY), UNTESTED
 ```
 
 ## Reliable demo path (works with no network and no API keys)

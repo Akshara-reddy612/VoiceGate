@@ -124,3 +124,45 @@ def test_one_time_said_twice_is_not_ambiguous():
 def test_minutes_with_meridiem_read_once():
     n = normalize("4:30 pm", TODAY)
     assert n.time == time(16, 30) and n.issues == []
+
+
+# ---------- Telugu "evening" spellings and ambiguous service words ----------
+
+EVENING_SPELLINGS = ["sayantram", "sayantaram", "sayanthram", "saayantram", "saayantaram", "sayantharam",
+                     "saayanthram", "sayankalam"]
+
+
+@pytest.mark.parametrize("word", EVENING_SPELLINGS)
+def test_evening_spelling_variants(word):
+    n = normalize(f"repu {word} 5 ki", TODAY)
+    assert n.part_of_day == "evening" and n.date == date(2026, 11, 3) and n.time == time(17, 0)
+
+
+@pytest.mark.parametrize("word", EVENING_SPELLINGS)
+def test_evening_without_hour_needs_hour(word):
+    n = normalize(f"repu {word}", TODAY)
+    assert n.part_of_day == "evening" and n.time is None and "needs_hour" in n.issues
+
+
+@pytest.mark.parametrize("word", ["samaram", "sayanna", "santram"])
+def test_similar_words_are_not_evening(word):
+    assert normalize(f"repu {word}", TODAY).part_of_day is None
+
+
+@pytest.mark.parametrize("text", ["chinna checkup", "normal checkup kavali", "just a check up", "routine check-up"])
+def test_bare_checkup_is_ambiguous(text):
+    n = normalize(text, TODAY, CFG)
+    assert n.service is None and "ambiguous_service" in n.issues
+    assert n.service_options == ["consultation", "full_checkup"]
+
+
+@pytest.mark.parametrize("text, service", [("full body checkup", "full_checkup"), ("health checkup", "full_checkup"),
+                                           ("doctor consultation", "consultation"), ("vaccine", "vaccination")])
+def test_specific_service_words_still_resolve(text, service):
+    n = normalize(text, TODAY, CFG)
+    assert n.service == service and "ambiguous_service" not in n.issues
+
+
+def test_unknown_service_word_is_not_guessed():
+    n = normalize("normal", TODAY, CFG)
+    assert n.service is None and n.service_options == []

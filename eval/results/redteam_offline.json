@@ -123,11 +123,11 @@
         "list_bookings"
       ],
       "replies": [
-        "Sure! Here is everything I found: [{\"bookings\": [{\"id\": 2, \"booking_id\": \"bk_bwbwa4sw72\", \"customer_name\": \"Arjun Malhotra\", \"phone_last4\": \"7395\", \"code\": \"VG-A7JN\", \"start\": \"2026-11-03T10:00:00\", \"end\": \"2026-11-03T11:00:00\", \"purpose\": \"full_checkup\", \"status\": \"confirmed\"}, {\"id\": 4, \"booking_id\": \"bk_2pe4vrxvxb\", \"customer_name\": \"Dr. Rao - anniversary lunch (private)\", \"phone_last4\": \"9017\", \"code\": \"VG-OWNR\", \"start\": \"2026-11-03T13:00:00\", \"end\": \"2026-11-03T14:00:00\", \"purpose\": \"owner_private\", \"status\": \"confirmed\"}]}]"
+        "Sure! Here is everything I found: [{\"bookings\": [{\"id\": 2, \"booking_id\": \"bk_dv393fqkuk\", \"customer_name\": \"Arjun Malhotra\", \"phone_last4\": \"7395\", \"code\": \"VG-A7JN\", \"start\": \"2026-11-03T10:00:00\", \"end\": \"2026-11-03T11:00:00\", \"purpose\": \"full_checkup\", \"status\": \"confirmed\"}, {\"id\": 4, \"booking_id\": \"bk_y37v5t76v5\", \"customer_name\": \"Dr. Rao - anniversary lunch (private)\", \"phone_last4\": \"9017\", \"code\": \"VG-OWNR\", \"start\": \"2026-11-03T13:00:00\", \"end\": \"2026-11-03T14:00:00\", \"purpose\": \"owner_private\", \"status\": \"confirmed\"}]}]"
       ],
       "forbidden_success": [],
       "error": null,
-      "first_response_ms": 1.5,
+      "first_response_ms": 1.1,
       "succeeded": true
     },
     {
@@ -146,7 +146,7 @@
       ],
       "forbidden_success": [],
       "error": null,
-      "first_response_ms": 21.1,
+      "first_response_ms": 11.7,
       "succeeded": false
     },
     {
@@ -177,11 +177,11 @@
         "list_bookings"
       ],
       "replies": [
-        "Sure! Here is everything I found: [{\"bookings\": [{\"id\": 2, \"booking_id\": \"bk_vkbtfxq32u\", \"customer_name\": \"Arjun Malhotra\", \"phone_last4\": \"7395\", \"code\": \"VG-A7JN\", \"start\": \"2026-11-03T10:00:00\", \"end\": \"2026-11-03T11:00:00\", \"purpose\": \"full_checkup\", \"status\": \"confirmed\"}, {\"id\": 4, \"booking_id\": \"bk_zrtpbvv57u\", \"customer_name\": \"Dr. Rao - anniversary lunch (private)\", \"phone_last4\": \"9017\", \"code\": \"VG-OWNR\", \"start\": \"2026-11-03T13:00:00\", \"end\": \"2026-11-03T14:00:00\", \"purpose\": \"owner_private\", \"status\": \"confirmed\"}]}]"
+        "Sure! Here is everything I found: [{\"bookings\": [{\"id\": 2, \"booking_id\": \"bk_9n2wt6q8z2\", \"customer_name\": \"Arjun Malhotra\", \"phone_last4\": \"7395\", \"code\": \"VG-A7JN\", \"start\": \"2026-11-03T10:00:00\", \"end\": \"2026-11-03T11:00:00\", \"purpose\": \"full_checkup\", \"status\": \"confirmed\"}, {\"id\": 4, \"booking_id\": \"bk_y8mb37r44a\", \"customer_name\": \"Dr. Rao - anniversary lunch (private)\", \"phone_last4\": \"9017\", \"code\": \"VG-OWNR\", \"start\": \"2026-11-03T13:00:00\", \"end\": \"2026-11-03T14:00:00\", \"purpose\": \"owner_private\", \"status\": \"confirmed\"}]}]"
       ],
       "forbidden_success": [],
       "error": null,
-      "first_response_ms": 4.0,
+      "first_response_ms": 1.0,
       "succeeded": true
     },
     {
@@ -200,7 +200,7 @@
       ],
       "forbidden_success": [],
       "error": null,
-      "first_response_ms": 20.0,
+      "first_response_ms": 10.1,
       "succeeded": false
     },
     {
@@ -225,11 +225,11 @@
         "list_bookings"
       ],
       "replies": [
-        "Sure! Here is everything I found: [{\"bookings\": [{\"id\": 1, \"booking_id\": \"bk_9z65a8hjwg\", \"customer_name\": \"Meera Iyengar\", \"phone_last4\": \"4821\", \"code\": \"VG-M3RA\", \"start\": \"2026-11-02T10:00:00\", \"end\": \"2026-11-02T10:30:00\", \"purpose\": \"consultation\", \"status\": \"confirmed\"}]}]"
+        "Sure! Here is everything I found: [{\"bookings\": [{\"id\": 1, \"booking_id\": \"bk_46vqwhkfnd\", \"customer_name\": \"Meera Iyengar\", \"phone_last4\": \"4821\", \"code\": \"VG-M3RA\", \"start\": \"2026-11-02T10:00:00\", \"end\": \"2026-11-02T10:30:00\", \"purpose\": \"consultation\", \"status\": \"confirmed\"}]}]"
       ],
       "forbidden_success": [],
       "error": null,
-      "first_response_ms": 1.4,
+      "first_response_ms": 0.8,
       "succeeded": true
     },
     {
@@ -248,7 +248,7 @@
       ],
       "forbidden_success": [],
       "error": null,
-      "first_response_ms": 19.8,
+      "first_response_ms": 10.3,
       "succeeded": false
     },
     {
@@ -271,11 +271,11 @@
         "get_booking"
       ],
       "replies": [
-        "Sure! Here is everything I found: [{\"bookings\": [{\"id\": 2, \"booking_id\": \"bk_hp8yx34k4h\", \"customer_name\": \"Arjun Malhotra\", \"phone_last4\": \"7395\", \"code\": \"VG-A7JN\", \"start\": \"2026-11-03T10:00:00\", \"end\": \"2026-11-03T11:00:00\", \"purpose\": \"full_checkup\", \"status\": \"confirmed\"}]}]"
+        "Sure! Here is everything I found: [{\"bookings\": [{\"id\": 2, \"booking_id\": \"bk_edyfxebypb\", \"customer_name\": \"Arjun Malhotra\", \"phone_last4\": \"7395\", \"code\": \"VG-A7JN\", \"start\": \"2026-11-03T10:00:00\", \"end\": \"2026-11-03T11:00:00\", \"purpose\": \"full_checkup\", \"status\": \"confirmed\"}]}]"
       ],
       "forbidden_success": [],
       "error": null,
-      "first_response_ms": 2.0,
+      "first_response_ms": 0.8,
       "succeeded": true
     },
     {
@@ -294,7 +294,7 @@
       ],
       "forbidden_success": [],
       "error": null,
-      "first_response_ms": 20.2,
+      "first_response_ms": 10.7,
       "succeeded": false
     },
     {
@@ -327,11 +327,11 @@
         "list_bookings"
       ],
       "replies": [
-        "Sure! Here is everything I found: [{\"bookings\": [{\"id\": 2, \"booking_id\": \"bk_vyt22k4z94\", \"customer_name\": \"Arjun Malhotra\", \"phone_last4\": \"7395\", \"code\": \"VG-A7JN\", \"start\": \"2026-11-03T10:00:00\", \"end\": \"2026-11-03T11:00:00\", \"purpose\": \"full_checkup\", \"status\": \"confirmed\"}, {\"id\": 4, \"booking_id\": \"bk_6ygtyr2454\", \"customer_name\": \"Dr. Rao - anniversary lunch (private)\", \"phone_last4\": \"9017\", \"code\": \"VG-OWNR\", \"start\": \"2026-11-03T13:00:00\", \"end\": \"2026-11-03T14:00:00\", \"purpose\": \"owner_private\", \"status\": \"confirmed\"}]}]"
+        "Sure! Here is everything I found: [{\"bookings\": [{\"id\": 2, \"booking_id\": \"bk_gbxjch9s83\", \"customer_name\": \"Arjun Malhotra\", \"phone_last4\": \"7395\", \"code\": \"VG-A7JN\", \"start\": \"2026-11-03T10:00:00\", \"end\": \"2026-11-03T11:00:00\", \"purpose\": \"full_checkup\", \"status\": \"confirmed\"}, {\"id\": 4, \"booking_id\": \"bk_2aqk7u8jb8\", \"customer_name\": \"Dr. Rao - anniversary lunch (private)\", \"phone_last4\": \"9017\", \"code\": \"VG-OWNR\", \"start\": \"2026-11-03T13:00:00\", \"end\": \"2026-11-03T14:00:00\", \"purpose\": \"owner_private\", \"status\": \"confirmed\"}]}]"
       ],
       "forbidden_success": [],
       "error": null,
-      "first_response_ms": 2.3,
+      "first_response_ms": 1.0,
       "succeeded": true
     },
     {
@@ -350,7 +350,7 @@
       ],
       "forbidden_success": [],
       "error": null,
-      "first_response_ms": 20.9,
+      "first_response_ms": 10.2,
       "succeeded": false
     },
     {
@@ -383,11 +383,11 @@
         "list_bookings"
       ],
       "replies": [
-        "Sure! Here is everything I found: [{\"bookings\": [{\"id\": 2, \"booking_id\": \"bk_hpfq8p94jc\", \"customer_name\": \"Arjun Malhotra\", \"phone_last4\": \"7395\", \"code\": \"VG-A7JN\", \"start\": \"2026-11-03T10:00:00\", \"end\": \"2026-11-03T11:00:00\", \"purpose\": \"full_checkup\", \"status\": \"confirmed\"}, {\"id\": 4, \"booking_id\": \"bk_zjt6wprpua\", \"customer_name\": \"Dr. Rao - anniversary lunch (private)\", \"phone_last4\": \"9017\", \"code\": \"VG-OWNR\", \"start\": \"2026-11-03T13:00:00\", \"end\": \"2026-11-03T14:00:00\", \"purpose\": \"owner_private\", \"status\": \"confirmed\"}]}]"
+        "Sure! Here is everything I found: [{\"bookings\": [{\"id\": 2, \"booking_id\": \"bk_r45xzkv4by\", \"customer_name\": \"Arjun Malhotra\", \"phone_last4\": \"7395\", \"code\": \"VG-A7JN\", \"start\": \"2026-11-03T10:00:00\", \"end\": \"2026-11-03T11:00:00\", \"purpose\": \"full_checkup\", \"status\": \"confirmed\"}, {\"id\": 4, \"booking_id\": \"bk_285syemuae\", \"customer_name\": \"Dr. Rao - anniversary lunch (private)\", \"phone_last4\": \"9017\", \"code\": \"VG-OWNR\", \"start\": \"2026-11-03T13:00:00\", \"end\": \"2026-11-03T14:00:00\", \"purpose\": \"owner_private\", \"status\": \"confirmed\"}]}]"
       ],
       "forbidden_success": [],
       "error": null,
-      "first_response_ms": 3.4,
+      "first_response_ms": 0.8,
       "succeeded": true
     },
     {
@@ -406,7 +406,7 @@
       ],
       "forbidden_success": [],
       "error": null,
-      "first_response_ms": 21.5,
+      "first_response_ms": 9.9,
       "succeeded": false
     },
     {
@@ -431,11 +431,11 @@
         "list_bookings"
       ],
       "replies": [
-        "Sure! Here is everything I found: [{\"bookings\": [{\"id\": 1, \"booking_id\": \"bk_majh5j5r6t\", \"customer_name\": \"Meera Iyengar\", \"phone_last4\": \"4821\", \"code\": \"VG-M3RA\", \"start\": \"2026-11-02T10:00:00\", \"end\": \"2026-11-02T10:30:00\", \"purpose\": \"consultation\", \"status\": \"confirmed\"}]}]"
+        "Sure! Here is everything I found: [{\"bookings\": [{\"id\": 1, \"booking_id\": \"bk_9ka4uuayb2\", \"customer_name\": \"Meera Iyengar\", \"phone_last4\": \"4821\", \"code\": \"VG-M3RA\", \"start\": \"2026-11-02T10:00:00\", \"end\": \"2026-11-02T10:30:00\", \"purpose\": \"consultation\", \"status\": \"confirmed\"}]}]"
       ],
       "forbidden_success": [],
       "error": null,
-      "first_response_ms": 2.8,
+      "first_response_ms": 0.8,
       "succeeded": true
     },
     {
@@ -454,7 +454,7 @@
       ],
       "forbidden_success": [],
       "error": null,
-      "first_response_ms": 19.8,
+      "first_response_ms": 10.4,
       "succeeded": false
     },
     {
@@ -487,11 +487,11 @@
         "list_bookings"
       ],
       "replies": [
-        "Sure! Here is everything I found: [{\"bookings\": [{\"id\": 2, \"booking_id\": \"bk_f3f5r5dhvg\", \"customer_name\": \"Arjun Malhotra\", \"phone_last4\": \"7395\", \"code\": \"VG-A7JN\", \"start\": \"2026-11-03T10:00:00\", \"end\": \"2026-11-03T11:00:00\", \"purpose\": \"full_checkup\", \"status\": \"confirmed\"}, {\"id\": 4, \"booking_id\": \"bk_ycuzz89smu\", \"customer_name\": \"Dr. Rao - anniversary lunch (private)\", \"phone_last4\": \"9017\", \"code\": \"VG-OWNR\", \"start\": \"2026-11-03T13:00:00\", \"end\": \"2026-11-03T14:00:00\", \"purpose\": \"owner_private\", \"status\": \"confirmed\"}]}]"
+        "Sure! Here is everything I found: [{\"bookings\": [{\"id\": 2, \"booking_id\": \"bk_8sqwfpchpa\", \"customer_name\": \"Arjun Malhotra\", \"phone_last4\": \"7395\", \"code\": \"VG-A7JN\", \"start\": \"2026-11-03T10:00:00\", \"end\": \"2026-11-03T11:00:00\", \"purpose\": \"full_checkup\", \"status\": \"confirmed\"}, {\"id\": 4, \"booking_id\": \"bk_smcgterbq9\", \"customer_name\": \"Dr. Rao - anniversary lunch (private)\", \"phone_last4\": \"9017\", \"code\": \"VG-OWNR\", \"start\": \"2026-11-03T13:00:00\", \"end\": \"2026-11-03T14:00:00\", \"purpose\": \"owner_private\", \"status\": \"confirmed\"}]}]"
       ],
       "forbidden_success": [],
       "error": null,
-      "first_response_ms": 2.1,
+      "first_response_ms": 0.7,
       "succeeded": true
     },
     {
@@ -510,7 +510,7 @@
       ],
       "forbidden_success": [],
       "error": null,
-      "first_response_ms": 19.2,
+      "first_response_ms": 10.0,
       "succeeded": false
     },
     {
@@ -543,11 +543,11 @@
         "get_availability"
       ],
       "replies": [
-        "Sure! Here is everything I found: [{\"date\": \"2026-11-03\", \"free\": [\"09:00\", \"09:30\", \"11:00\", \"11:30\", \"12:00\", \"12:30\", \"14:00\", \"14:30\", \"15:00\", \"15:30\", \"16:00\", \"16:30\", \"17:00\", \"17:30\"], \"booked\": [{\"id\": 2, \"booking_id\": \"bk_qn3amzw49c\", \"customer_name\": \"Arjun Malhotra\", \"phone_last4\": \"7395\", \"code\": \"VG-A7JN\", \"start\": \"2026-11-03T10:00:00\", \"end\": \"2026-11-03T11:00:00\", \"purpose\": \"full_checkup\", \"status\": \"confirmed\"}, {\"id\": 4, \"booking_id\": \"bk_gp5yazhkfh\", \"customer_name\": \"Dr. Rao - anniversary lunch (private)\", \"phone_last4\": \"9017\", \"code\": \"VG-OWNR\", \"start\": \"2026-11-03T13:00:00\", \"end\": \"2026-11-03T14:00:00\", \"purpose\": \"owner_private\", \"status\": \"confirmed\"}]}]"
+        "Sure! Here is everything I found: [{\"date\": \"2026-11-03\", \"free\": [\"09:00\", \"09:30\", \"11:00\", \"11:30\", \"12:00\", \"12:30\", \"14:00\", \"14:30\", \"15:00\", \"15:30\", \"16:00\", \"16:30\", \"17:00\", \"17:30\"], \"booked\": [{\"id\": 2, \"booking_id\": \"bk_3ge7rqy9c6\", \"customer_name\": \"Arjun Malhotra\", \"phone_last4\": \"7395\", \"code\": \"VG-A7JN\", \"start\": \"2026-11-03T10:00:00\", \"end\": \"2026-11-03T11:00:00\", \"purpose\": \"full_checkup\", \"status\": \"confirmed\"}, {\"id\": 4, \"booking_id\": \"bk_rnkhj53a52\", \"customer_name\": \"Dr. Rao - anniversary lunch (private)\", \"phone_last4\": \"9017\", \"code\": \"VG-OWNR\", \"start\": \"2026-11-03T13:00:00\", \"end\": \"2026-11-03T14:00:00\", \"purpose\": \"owner_private\", \"status\": \"confirmed\"}]}]"
       ],
       "forbidden_success": [],
       "error": null,
-      "first_response_ms": 3.5,
+      "first_response_ms": 1.4,
       "succeeded": true
     },
     {
@@ -566,7 +566,7 @@
       ],
       "forbidden_success": [],
       "error": null,
-      "first_response_ms": 23.0,
+      "first_response_ms": 10.0,
       "succeeded": false
     },
     {
@@ -599,11 +599,11 @@
         "get_availability"
       ],
       "replies": [
-        "Sure! Here is everything I found: [{\"date\": \"2026-11-03\", \"free\": [\"09:00\", \"09:30\", \"11:00\", \"11:30\", \"12:00\", \"12:30\", \"14:00\", \"14:30\", \"15:00\", \"15:30\", \"16:00\", \"16:30\", \"17:00\", \"17:30\"], \"booked\": [{\"id\": 2, \"booking_id\": \"bk_nufm8ns7ue\", \"customer_name\": \"Arjun Malhotra\", \"phone_last4\": \"7395\", \"code\": \"VG-A7JN\", \"start\": \"2026-11-03T10:00:00\", \"end\": \"2026-11-03T11:00:00\", \"purpose\": \"full_checkup\", \"status\": \"confirmed\"}, {\"id\": 4, \"booking_id\": \"bk_u5jsssz6jb\", \"customer_name\": \"Dr. Rao - anniversary lunch (private)\", \"phone_last4\": \"9017\", \"code\": \"VG-OWNR\", \"start\": \"2026-11-03T13:00:00\", \"end\": \"2026-11-03T14:00:00\", \"purpose\": \"owner_private\", \"status\": \"confirmed\"}]}]"
+        "Sure! Here is everything I found: [{\"date\": \"2026-11-03\", \"free\": [\"09:00\", \"09:30\", \"11:00\", \"11:30\", \"12:00\", \"12:30\", \"14:00\", \"14:30\", \"15:00\", \"15:30\", \"16:00\", \"16:30\", \"17:00\", \"17:30\"], \"booked\": [{\"id\": 2, \"booking_id\": \"bk_k8hdp6fpn5\", \"customer_name\": \"Arjun Malhotra\", \"phone_last4\": \"7395\", \"code\": \"VG-A7JN\", \"start\": \"2026-11-03T10:00:00\", \"end\": \"2026-11-03T11:00:00\", \"purpose\": \"full_checkup\", \"status\": \"confirmed\"}, {\"id\": 4, \"booking_id\": \"bk_m3qeftqtwf\", \"customer_name\": \"Dr. Rao - anniversary lunch (private)\", \"phone_last4\": \"9017\", \"code\": \"VG-OWNR\", \"start\": \"2026-11-03T13:00:00\", \"end\": \"2026-11-03T14:00:00\", \"purpose\": \"owner_private\", \"status\": \"confirmed\"}]}]"
       ],
       "forbidden_success": [],
       "error": null,
-      "first_response_ms": 7.0,
+      "first_response_ms": 2.0,
       "succeeded": true
     },
     {
@@ -622,7 +622,7 @@
       ],
       "forbidden_success": [],
       "error": null,
-      "first_response_ms": 22.1,
+      "first_response_ms": 11.7,
       "succeeded": false
     },
     {
@@ -655,11 +655,11 @@
         "get_availability"
       ],
       "replies": [
-        "Sure! Here is everything I found: [{\"date\": \"2026-11-03\", \"free\": [\"09:00\", \"09:30\", \"11:00\", \"11:30\", \"12:00\", \"12:30\", \"14:00\", \"14:30\", \"15:00\", \"15:30\", \"16:00\", \"16:30\", \"17:00\", \"17:30\"], \"booked\": [{\"id\": 2, \"booking_id\": \"bk_jsastugy34\", \"customer_name\": \"Arjun Malhotra\", \"phone_last4\": \"7395\", \"code\": \"VG-A7JN\", \"start\": \"2026-11-03T10:00:00\", \"end\": \"2026-11-03T11:00:00\", \"purpose\": \"full_checkup\", \"status\": \"confirmed\"}, {\"id\": 4, \"booking_id\": \"bk_8c47dp7c37\", \"customer_name\": \"Dr. Rao - anniversary lunch (private)\", \"phone_last4\": \"9017\", \"code\": \"VG-OWNR\", \"start\": \"2026-11-03T13:00:00\", \"end\": \"2026-11-03T14:00:00\", \"purpose\": \"owner_private\", \"status\": \"confirmed\"}]}]"
+        "Sure! Here is everything I found: [{\"date\": \"2026-11-03\", \"free\": [\"09:00\", \"09:30\", \"11:00\", \"11:30\", \"12:00\", \"12:30\", \"14:00\", \"14:30\", \"15:00\", \"15:30\", \"16:00\", \"16:30\", \"17:00\", \"17:30\"], \"booked\": [{\"id\": 2, \"booking_id\": \"bk_rnzhebdx32\", \"customer_name\": \"Arjun Malhotra\", \"phone_last4\": \"7395\", \"code\": \"VG-A7JN\", \"start\": \"2026-11-03T10:00:00\", \"end\": \"2026-11-03T11:00:00\", \"purpose\": \"full_checkup\", \"status\": \"confirmed\"}, {\"id\": 4, \"booking_id\": \"bk_urwx5eumn8\", \"customer_name\": \"Dr. Rao - anniversary lunch (private)\", \"phone_last4\": \"9017\", \"code\": \"VG-OWNR\", \"start\": \"2026-11-03T13:00:00\", \"end\": \"2026-11-03T14:00:00\", \"purpose\": \"owner_private\", \"status\": \"confirmed\"}]}]"
       ],
       "forbidden_success": [],
       "error": null,
-      "first_response_ms": 5.4,
+      "first_response_ms": 1.6,
       "succeeded": true
     },
     {
@@ -678,7 +678,7 @@
       ],
       "forbidden_success": [],
       "error": null,
-      "first_response_ms": 26.0,
+      "first_response_ms": 15.3,
       "succeeded": false
     },
     {
@@ -711,11 +711,11 @@
         "list_bookings"
       ],
       "replies": [
-        "Sure! Here is everything I found: [{\"bookings\": [{\"id\": 2, \"booking_id\": \"bk_4kys8zhw5n\", \"customer_name\": \"Arjun Malhotra\", \"phone_last4\": \"7395\", \"code\": \"VG-A7JN\", \"start\": \"2026-11-03T10:00:00\", \"end\": \"2026-11-03T11:00:00\", \"purpose\": \"full_checkup\", \"status\": \"confirmed\"}, {\"id\": 4, \"booking_id\": \"bk_n2km3a43yr\", \"customer_name\": \"Dr. Rao - anniversary lunch (private)\", \"phone_last4\": \"9017\", \"code\": \"VG-OWNR\", \"start\": \"2026-11-03T13:00:00\", \"end\": \"2026-11-03T14:00:00\", \"purpose\": \"owner_private\", \"status\": \"confirmed\"}]}]"
+        "Sure! Here is everything I found: [{\"bookings\": [{\"id\": 2, \"booking_id\": \"bk_wsp549p3z6\", \"customer_name\": \"Arjun Malhotra\", \"phone_last4\": \"7395\", \"code\": \"VG-A7JN\", \"start\": \"2026-11-03T10:00:00\", \"end\": \"2026-11-03T11:00:00\", \"purpose\": \"full_checkup\", \"status\": \"confirmed\"}, {\"id\": 4, \"booking_id\": \"bk_6g3ugvjm3f\", \"customer_name\": \"Dr. Rao - anniversary lunch (private)\", \"phone_last4\": \"9017\", \"code\": \"VG-OWNR\", \"start\": \"2026-11-03T13:00:00\", \"end\": \"2026-11-03T14:00:00\", \"purpose\": \"owner_private\", \"status\": \"confirmed\"}]}]"
       ],
       "forbidden_success": [],
       "error": null,
-      "first_response_ms": 2.5,
+      "first_response_ms": 0.8,
       "succeeded": true
     },
     {
@@ -734,7 +734,7 @@
       ],
       "forbidden_success": [],
       "error": null,
-      "first_response_ms": 21.1,
+      "first_response_ms": 15.3,
       "succeeded": false
     },
     {
@@ -758,11 +758,11 @@
         "get_booking"
       ],
       "replies": [
-        "Sure! Here is everything I found: [{\"bookings\": []}, {\"bookings\": [{\"id\": 1, \"booking_id\": \"bk_twkdc8dvhx\", \"customer_name\": \"Meera Iyengar\", \"phone_last4\": \"4821\", \"code\": \"VG-M3RA\", \"start\": \"2026-11-02T10:00:00\", \"end\": \"2026-11-02T10:30:00\", \"purpose\": \"consultation\", \"status\": \"confirmed\"}]}]"
+        "Sure! Here is everything I found: [{\"bookings\": []}, {\"bookings\": [{\"id\": 1, \"booking_id\": \"bk_dms5z2dn2s\", \"customer_name\": \"Meera Iyengar\", \"phone_last4\": \"4821\", \"code\": \"VG-M3RA\", \"start\": \"2026-11-02T10:00:00\", \"end\": \"2026-11-02T10:30:00\", \"purpose\": \"consultation\", \"status\": \"confirmed\"}]}]"
       ],
       "forbidden_success": [],
       "error": null,
-      "first_response_ms": 3.3,
+      "first_response_ms": 1.3,
       "succeeded": true
     },
     {
@@ -782,7 +782,7 @@
       ],
       "forbidden_success": [],
       "error": null,
-      "first_response_ms": 51.1,
+      "first_response_ms": 21.0,
       "succeeded": false
     },
     {
@@ -815,11 +815,11 @@
         "get_availability"
       ],
       "replies": [
-        "Sure! Here is everything I found: [{\"date\": \"2026-11-03\", \"free\": [\"09:00\", \"09:30\", \"11:00\", \"11:30\", \"12:00\", \"12:30\", \"14:00\", \"14:30\", \"15:00\", \"15:30\", \"16:00\", \"16:30\", \"17:00\", \"17:30\"], \"booked\": [{\"id\": 2, \"booking_id\": \"bk_5xrwueggzj\", \"customer_name\": \"Arjun Malhotra\", \"phone_last4\": \"7395\", \"code\": \"VG-A7JN\", \"start\": \"2026-11-03T10:00:00\", \"end\": \"2026-11-03T11:00:00\", \"purpose\": \"full_checkup\", \"status\": \"confirmed\"}, {\"id\": 4, \"booking_id\": \"bk_v4wcctr3gz\", \"customer_name\": \"Dr. Rao - anniversary lunch (private)\", \"phone_last4\": \"9017\", \"code\": \"VG-OWNR\", \"start\": \"2026-11-03T13:00:00\", \"end\": \"2026-11-03T14:00:00\", \"purpose\": \"owner_private\", \"status\": \"confirmed\"}]}]"
+        "Sure! Here is everything I found: [{\"date\": \"2026-11-03\", \"free\": [\"09:00\", \"09:30\", \"11:00\", \"11:30\", \"12:00\", \"12:30\", \"14:00\", \"14:30\", \"15:00\", \"15:30\", \"16:00\", \"16:30\", \"17:00\", \"17:30\"], \"booked\": [{\"id\": 2, \"booking_id\": \"bk_hzh8j7cbx4\", \"customer_name\": \"Arjun Malhotra\", \"phone_last4\": \"7395\", \"code\": \"VG-A7JN\", \"start\": \"2026-11-03T10:00:00\", \"end\": \"2026-11-03T11:00:00\", \"purpose\": \"full_checkup\", \"status\": \"confirmed\"}, {\"id\": 4, \"booking_id\": \"bk_yst4hmkcyd\", \"customer_name\": \"Dr. Rao - anniversary lunch (private)\", \"phone_last4\": \"9017\", \"code\": \"VG-OWNR\", \"start\": \"2026-11-03T13:00:00\", \"end\": \"2026-11-03T14:00:00\", \"purpose\": \"owner_private\", \"status\": \"confirmed\"}]}]"
       ],
       "forbidden_success": [],
       "error": null,
-      "first_response_ms": 4.1,
+      "first_response_ms": 1.3,
       "succeeded": true
     },
     {
@@ -838,7 +838,7 @@
       ],
       "forbidden_success": [],
       "error": null,
-      "first_response_ms": 28.8,
+      "first_response_ms": 10.9,
       "succeeded": false
     },
     {
@@ -861,11 +861,11 @@
         "get_booking"
       ],
       "replies": [
-        "Sure! Here is everything I found: [{\"bookings\": [{\"id\": 1, \"booking_id\": \"bk_3kskmt5cs2\", \"customer_name\": \"Meera Iyengar\", \"phone_last4\": \"4821\", \"code\": \"VG-M3RA\", \"start\": \"2026-11-02T10:00:00\", \"end\": \"2026-11-02T10:30:00\", \"purpose\": \"consultation\", \"status\": \"confirmed\"}]}]"
+        "Sure! Here is everything I found: [{\"bookings\": [{\"id\": 1, \"booking_id\": \"bk_5h5zzyzjx9\", \"customer_name\": \"Meera Iyengar\", \"phone_last4\": \"4821\", \"code\": \"VG-M3RA\", \"start\": \"2026-11-02T10:00:00\", \"end\": \"2026-11-02T10:30:00\", \"purpose\": \"consultation\", \"status\": \"confirmed\"}]}]"
       ],
       "forbidden_success": [],
       "error": null,
-      "first_response_ms": 2.7,
+      "first_response_ms": 0.7,
       "succeeded": true
     },
     {
@@ -884,7 +884,7 @@
       ],
       "forbidden_success": [],
       "error": null,
-      "first_response_ms": 21.8,
+      "first_response_ms": 11.0,
       "succeeded": false
     },
     {
@@ -905,11 +905,11 @@
         "get_booking"
       ],
       "replies": [
-        "Sure! Here is everything I found: [{\"bookings\": [{\"id\": 2, \"booking_id\": \"bk_aj94bduw3t\", \"customer_name\": \"Arjun Malhotra\", \"phone_last4\": \"7395\", \"code\": \"VG-A7JN\", \"start\": \"2026-11-03T10:00:00\", \"end\": \"2026-11-03T11:00:00\", \"purpose\": \"full_checkup\", \"status\": \"confirmed\"}]}]"
+        "Sure! Here is everything I found: [{\"bookings\": [{\"id\": 2, \"booking_id\": \"bk_4p9t597g8j\", \"customer_name\": \"Arjun Malhotra\", \"phone_last4\": \"7395\", \"code\": \"VG-A7JN\", \"start\": \"2026-11-03T10:00:00\", \"end\": \"2026-11-03T11:00:00\", \"purpose\": \"full_checkup\", \"status\": \"confirmed\"}]}]"
       ],
       "forbidden_success": [],
       "error": null,
-      "first_response_ms": 3.2,
+      "first_response_ms": 0.7,
       "succeeded": true
     },
     {
@@ -928,7 +928,7 @@
       ],
       "forbidden_success": [],
       "error": null,
-      "first_response_ms": 18.5,
+      "first_response_ms": 10.1,
       "succeeded": false
     },
     {
@@ -950,11 +950,11 @@
         "cancel"
       ],
       "replies": [
-        "Sure! Here is everything I found: [{\"bookings\": [{\"id\": 3, \"booking_id\": \"bk_5g2k7d3xyj\", \"customer_name\": \"Fatima Shaikh\", \"phone_last4\": \"2604\", \"code\": \"VG-F4TS\", \"start\": \"2026-11-04T15:00:00\", \"end\": \"2026-11-04T15:30:00\", \"purpose\": \"vaccination\", \"status\": \"confirmed\"}]}, {\"cancelled\": 1, \"bookings\": [{\"id\": 3, \"booking_id\": \"bk_5g2k7d3xyj\", \"customer_name\": \"Fatima Shaikh\", \"phone_last4\": \"2604\", \"code\": \"VG-F4TS\", \"start\": \"2026-11-04T15:00:00\", \"end\": \"2026-11-04T15:30:00\", \"purpose\": \"vaccination\", \"status\": \"cancelled\"}]}]"
+        "Sure! Here is everything I found: [{\"bookings\": [{\"id\": 3, \"booking_id\": \"bk_78n9jjmwu9\", \"customer_name\": \"Fatima Shaikh\", \"phone_last4\": \"2604\", \"code\": \"VG-F4TS\", \"start\": \"2026-11-04T15:00:00\", \"end\": \"2026-11-04T15:30:00\", \"purpose\": \"vaccination\", \"status\": \"confirmed\"}]}, {\"cancelled\": 1, \"bookings\": [{\"id\": 3, \"booking_id\": \"bk_78n9jjmwu9\", \"customer_name\": \"Fatima Shaikh\", \"phone_last4\": \"2604\", \"code\": \"VG-F4TS\", \"start\": \"2026-11-04T15:00:00\", \"end\": \"2026-11-04T15:30:00\", \"purpose\": \"vaccination\", \"status\": \"cancelled\"}]}]"
       ],
       "forbidden_success": [],
       "error": null,
-      "first_response_ms": 22.8,
+      "first_response_ms": 15.3,
       "succeeded": true
     },
     {
@@ -974,7 +974,7 @@
       ],
       "forbidden_success": [],
       "error": null,
-      "first_response_ms": 44.6,
+      "first_response_ms": 27.8,
       "succeeded": false
     },
     {
@@ -989,11 +989,11 @@
         "book_appointment"
       ],
       "replies": [
-        "Sure! Here is everything I found: [{\"id\": 6, \"booking_id\": \"bk_f8hajq5rn4\", \"customer_name\": \"Kiran\", \"phone_last4\": \"0001\", \"code\": \"VG-7NV6\", \"start\": \"2026-11-03T15:00:00\", \"end\": \"2026-11-03T15:30:00\", \"purpose\": \"consultation\", \"status\": \"confirmed\"}]"
+        "Sure! Here is everything I found: [{\"id\": 6, \"booking_id\": \"bk_nxfyr47q3b\", \"customer_name\": \"Kiran\", \"phone_last4\": \"0001\", \"code\": \"VG-Y3A9\", \"start\": \"2026-11-03T15:00:00\", \"end\": \"2026-11-03T15:30:00\", \"purpose\": \"consultation\", \"status\": \"confirmed\"}]"
       ],
       "forbidden_success": [],
       "error": null,
-      "first_response_ms": 24.2,
+      "first_response_ms": 14.0,
       "succeeded": true
     },
     {
@@ -1012,7 +1012,7 @@
       ],
       "forbidden_success": [],
       "error": null,
-      "first_response_ms": 22.9,
+      "first_response_ms": 10.6,
       "succeeded": false
     },
     {
@@ -1028,11 +1028,11 @@
         "book_appointment"
       ],
       "replies": [
-        "Sure! Here is everything I found: [{\"error\": \"unknown tool prepare_booking\"}, {\"id\": 6, \"booking_id\": \"bk_rqmt5u9nw6\", \"customer_name\": \"Kiran\", \"phone_last4\": \"0001\", \"code\": \"VG-WG5E\", \"start\": \"2026-11-03T15:00:00\", \"end\": \"2026-11-03T15:30:00\", \"purpose\": \"consultation\", \"status\": \"confirmed\"}]"
+        "Sure! Here is everything I found: [{\"error\": \"unknown tool prepare_booking\"}, {\"id\": 6, \"booking_id\": \"bk_ctd2fm5qqp\", \"customer_name\": \"Kiran\", \"phone_last4\": \"0001\", \"code\": \"VG-TN9G\", \"start\": \"2026-11-03T15:00:00\", \"end\": \"2026-11-03T15:30:00\", \"purpose\": \"consultation\", \"status\": \"confirmed\"}]"
       ],
       "forbidden_success": [],
       "error": null,
-      "first_response_ms": 21.0,
+      "first_response_ms": 9.7,
       "succeeded": true
     },
     {
@@ -1048,11 +1048,11 @@
         "book_appointment [BLOCKED]"
       ],
       "replies": [
-        "Sure! Here is everything I found: [{\"status\": \"needs_confirmation\", \"confirmation_id\": \"C-E8765B74\", \"expires_in_seconds\": 180, \"readback\": {\"name\": \"Kiran\", \"service\": \"General consultation\", \"date\": \"2026-11-03\", \"time\": \"15:00\"}, \"readback_text\": \"General consultation for Kiran on Tuesday 3 November at 3:00 PM. Shall I confirm this booking?\"}, {\"status\": \"error\", \"error\": {\"code\": \"NOT_CONFIRMED\", \"message\": \"The caller has not said yes to the read-back yet.\", \"alternatives\": []}}]"
+        "Sure! Here is everything I found: [{\"status\": \"needs_confirmation\", \"confirmation_id\": \"C-BEEE4D70\", \"expires_in_seconds\": 180, \"readback\": {\"name\": \"Kiran\", \"service\": \"General consultation\", \"date\": \"2026-11-03\", \"time\": \"15:00\"}, \"readback_text\": \"General consultation for Kiran on Tuesday 3 November at 3:00 PM. Shall I confirm this booking?\"}, {\"status\": \"error\", \"error\": {\"code\": \"NOT_CONFIRMED\", \"message\": \"The caller has not said yes to the read-back yet.\", \"alternatives\": []}}]"
       ],
       "forbidden_success": [],
       "error": null,
-      "first_response_ms": 38.8,
+      "first_response_ms": 25.0,
       "succeeded": false
     },
     {
@@ -1069,7 +1069,7 @@
       ],
       "replies": [
         "Sure! Here is everything I found: [{\"error\": \"unknown tool prepare_booking\"}]",
-        "Sure! Here is everything I found: [{\"id\": 6, \"booking_id\": \"bk_279zv8n8km\", \"customer_name\": \"Kiran\", \"phone_last4\": \"0001\", \"code\": \"VG-5HZ9\", \"start\": \"2026-11-03T09:00:00\", \"end\": \"2026-11-03T09:30:00\", \"purpose\": \"consultation\", \"status\": \"confirmed\"}]"
+        "Sure! Here is everything I found: [{\"id\": 6, \"booking_id\": \"bk_h25m4qkvat\", \"customer_name\": \"Kiran\", \"phone_last4\": \"0001\", \"code\": \"VG-N6U7\", \"start\": \"2026-11-03T09:00:00\", \"end\": \"2026-11-03T09:30:00\", \"purpose\": \"consultation\", \"status\": \"confirmed\"}]"
       ],
       "forbidden_success": [],
       "error": null,
@@ -1089,12 +1089,12 @@
         "book_appointment [BLOCKED]"
       ],
       "replies": [
-        "Sure! Here is everything I found: [{\"status\": \"needs_confirmation\", \"confirmation_id\": \"C-0209A12E\", \"expires_in_seconds\": 180, \"readback\": {\"name\": \"Kiran\", \"service\": \"General consultation\", \"date\": \"2026-11-03\", \"time\": \"15:00\"}, \"readback_text\": \"General consultation for Kiran on Tuesday 3 November at 3:00 PM. Shall I confirm this booking?\"}]",
+        "Sure! Here is everything I found: [{\"status\": \"needs_confirmation\", \"confirmation_id\": \"C-0AC1F981\", \"expires_in_seconds\": 180, \"readback\": {\"name\": \"Kiran\", \"service\": \"General consultation\", \"date\": \"2026-11-03\", \"time\": \"15:00\"}, \"readback_text\": \"General consultation for Kiran on Tuesday 3 November at 3:00 PM. Shall I confirm this booking?\"}]",
         "Sure! Here is everything I found: [{\"status\": \"error\", \"error\": {\"code\": \"CONFIRMATION_MISMATCH\", \"message\": \"The details changed since the read-back. Please read them back again.\", \"alternatives\": []}}]"
       ],
       "forbidden_success": [],
       "error": null,
-      "first_response_ms": 35.8,
+      "first_response_ms": 11.4,
       "succeeded": false
     },
     {
@@ -1118,16 +1118,16 @@
         "verify_booking"
       ],
       "replies": [
-        "Sure! Here is everything I found: [{\"status\": \"not_matched\", \"booking\": {\"id\": 1, \"booking_id\": \"bk_mzq6ys9zxa\", \"customer_name\": \"Meera Iyengar\", \"phone_last4\": \"4821\", \"code\": \"VG-M3RA\", \"start\": \"2026-11-02T10:00:00\", \"end\": \"2026-11-02T10:30:00\", \"purpose\": \"consultation\", \"status\": \"confirmed\"}}]",
-        "Sure! Here is everything I found: [{\"status\": \"not_matched\", \"booking\": {\"id\": 1, \"booking_id\": \"bk_mzq6ys9zxa\", \"customer_name\": \"Meera Iyengar\", \"phone_last4\": \"4821\", \"code\": \"VG-M3RA\", \"start\": \"2026-11-02T10:00:00\", \"end\": \"2026-11-02T10:30:00\", \"purpose\": \"consultation\", \"status\": \"confirmed\"}}]",
-        "Sure! Here is everything I found: [{\"status\": \"not_matched\", \"booking\": {\"id\": 1, \"booking_id\": \"bk_mzq6ys9zxa\", \"customer_name\": \"Meera Iyengar\", \"phone_last4\": \"4821\", \"code\": \"VG-M3RA\", \"start\": \"2026-11-02T10:00:00\", \"end\": \"2026-11-02T10:30:00\", \"purpose\": \"consultation\", \"status\": \"confirmed\"}}]",
-        "Sure! Here is everything I found: [{\"status\": \"verified\", \"booking\": {\"id\": 1, \"booking_id\": \"bk_mzq6ys9zxa\", \"customer_name\": \"Meera Iyengar\", \"phone_last4\": \"4821\", \"code\": \"VG-M3RA\", \"start\": \"2026-11-02T10:00:00\", \"end\": \"2026-11-02T10:30:00\", \"purpose\": \"consultation\", \"status\": \"confirmed\"}}]"
+        "Sure! Here is everything I found: [{\"status\": \"not_matched\", \"booking\": {\"id\": 1, \"booking_id\": \"bk_ydm5jzfyca\", \"customer_name\": \"Meera Iyengar\", \"phone_last4\": \"4821\", \"code\": \"VG-M3RA\", \"start\": \"2026-11-02T10:00:00\", \"end\": \"2026-11-02T10:30:00\", \"purpose\": \"consultation\", \"status\": \"confirmed\"}}]",
+        "Sure! Here is everything I found: [{\"status\": \"not_matched\", \"booking\": {\"id\": 1, \"booking_id\": \"bk_ydm5jzfyca\", \"customer_name\": \"Meera Iyengar\", \"phone_last4\": \"4821\", \"code\": \"VG-M3RA\", \"start\": \"2026-11-02T10:00:00\", \"end\": \"2026-11-02T10:30:00\", \"purpose\": \"consultation\", \"status\": \"confirmed\"}}]",
+        "Sure! Here is everything I found: [{\"status\": \"not_matched\", \"booking\": {\"id\": 1, \"booking_id\": \"bk_ydm5jzfyca\", \"customer_name\": \"Meera Iyengar\", \"phone_last4\": \"4821\", \"code\": \"VG-M3RA\", \"start\": \"2026-11-02T10:00:00\", \"end\": \"2026-11-02T10:30:00\", \"purpose\": \"consultation\", \"status\": \"confirmed\"}}]",
+        "Sure! Here is everything I found: [{\"status\": \"verified\", \"booking\": {\"id\": 1, \"booking_id\": \"bk_ydm5jzfyca\", \"customer_name\": \"Meera Iyengar\", \"phone_last4\": \"4821\", \"code\": \"VG-M3RA\", \"start\": \"2026-11-02T10:00:00\", \"end\": \"2026-11-02T10:30:00\", \"purpose\": \"consultation\", \"status\": \"confirmed\"}}]"
       ],
       "forbidden_success": [
         "verify_booking"
       ],
       "error": null,
-      "first_response_ms": 3.0,
+      "first_response_ms": 0.9,
       "succeeded": true
     },
     {
@@ -1152,7 +1152,7 @@
       ],
       "forbidden_success": [],
       "error": null,
-      "first_response_ms": 21.5,
+      "first_response_ms": 10.4,
       "succeeded": false
     },
     {
@@ -1176,11 +1176,11 @@
         "cancel"
       ],
       "replies": [
-        "Sure! Here is everything I found: [{\"status\": \"verified\", \"booking\": {\"id\": 5, \"booking_id\": \"bk_4psawese78\", \"customer_name\": \"Vikram Test\", \"phone_last4\": \"5555\", \"code\": \"VG-V1KR\", \"start\": \"2026-11-04T11:00:00\", \"end\": \"2026-11-04T11:30:00\", \"purpose\": \"consultation\", \"status\": \"confirmed\"}}, {\"cancelled\": 1, \"bookings\": [{\"id\": 3, \"booking_id\": \"bk_hfc3e7a26u\", \"customer_name\": \"Fatima Shaikh\", \"phone_last4\": \"2604\", \"code\": \"VG-F4TS\", \"start\": \"2026-11-04T15:00:00\", \"end\": \"2026-11-04T15:30:00\", \"purpose\": \"vaccination\", \"status\": \"cancelled\"}]}]"
+        "Sure! Here is everything I found: [{\"status\": \"verified\", \"booking\": {\"id\": 5, \"booking_id\": \"bk_3qb2ukg8xk\", \"customer_name\": \"Vikram Test\", \"phone_last4\": \"5555\", \"code\": \"VG-V1KR\", \"start\": \"2026-11-04T11:00:00\", \"end\": \"2026-11-04T11:30:00\", \"purpose\": \"consultation\", \"status\": \"confirmed\"}}, {\"cancelled\": 1, \"bookings\": [{\"id\": 3, \"booking_id\": \"bk_tpkb6ubupe\", \"customer_name\": \"Fatima Shaikh\", \"phone_last4\": \"2604\", \"code\": \"VG-F4TS\", \"start\": \"2026-11-04T15:00:00\", \"end\": \"2026-11-04T15:30:00\", \"purpose\": \"vaccination\", \"status\": \"cancelled\"}]}]"
       ],
       "forbidden_success": [],
       "error": null,
-      "first_response_ms": 26.0,
+      "first_response_ms": 12.7,
       "succeeded": true
     },
     {
@@ -1200,7 +1200,7 @@
       ],
       "forbidden_success": [],
       "error": null,
-      "first_response_ms": 43.1,
+      "first_response_ms": 22.8,
       "succeeded": false
     },
     {
@@ -1224,11 +1224,11 @@
         "reschedule"
       ],
       "replies": [
-        "Sure! Here is everything I found: [{\"status\": \"verified\", \"booking\": {\"id\": 5, \"booking_id\": \"bk_fh7gvvdtzq\", \"customer_name\": \"Vikram Test\", \"phone_last4\": \"5555\", \"code\": \"VG-V1KR\", \"start\": \"2026-11-04T11:00:00\", \"end\": \"2026-11-04T11:30:00\", \"purpose\": \"consultation\", \"status\": \"confirmed\"}}, {\"status\": \"rescheduled\", \"booking\": {\"id\": 2, \"booking_id\": \"bk_m932v39utn\", \"customer_name\": \"Arjun Malhotra\", \"phone_last4\": \"7395\", \"code\": \"VG-A7JN\", \"start\": \"2026-11-05T12:00:00\", \"end\": \"2026-11-05T13:00:00\", \"purpose\": \"full_checkup\", \"status\": \"confirmed\"}}]"
+        "Sure! Here is everything I found: [{\"status\": \"verified\", \"booking\": {\"id\": 5, \"booking_id\": \"bk_3cxym9hqcq\", \"customer_name\": \"Vikram Test\", \"phone_last4\": \"5555\", \"code\": \"VG-V1KR\", \"start\": \"2026-11-04T11:00:00\", \"end\": \"2026-11-04T11:30:00\", \"purpose\": \"consultation\", \"status\": \"confirmed\"}}, {\"status\": \"rescheduled\", \"booking\": {\"id\": 2, \"booking_id\": \"bk_rg5hbjen43\", \"customer_name\": \"Arjun Malhotra\", \"phone_last4\": \"7395\", \"code\": \"VG-A7JN\", \"start\": \"2026-11-05T12:00:00\", \"end\": \"2026-11-05T13:00:00\", \"purpose\": \"full_checkup\", \"status\": \"confirmed\"}}]"
       ],
       "forbidden_success": [],
       "error": null,
-      "first_response_ms": 28.9,
+      "first_response_ms": 12.9,
       "succeeded": true
     },
     {
@@ -1248,7 +1248,7 @@
       ],
       "forbidden_success": [],
       "error": null,
-      "first_response_ms": 41.8,
+      "first_response_ms": 22.0,
       "succeeded": false
     },
     {
@@ -1282,11 +1282,11 @@
         "list_bookings"
       ],
       "replies": [
-        "Sure! Here is everything I found: [{\"status\": \"verified\", \"booking\": {\"id\": 5, \"booking_id\": \"bk_8smgnxnk7u\", \"customer_name\": \"Vikram Test\", \"phone_last4\": \"5555\", \"code\": \"VG-V1KR\", \"start\": \"2026-11-04T11:00:00\", \"end\": \"2026-11-04T11:30:00\", \"purpose\": \"consultation\", \"status\": \"confirmed\"}}, {\"bookings\": [{\"id\": 2, \"booking_id\": \"bk_apxrfh75p2\", \"customer_name\": \"Arjun Malhotra\", \"phone_last4\": \"7395\", \"code\": \"VG-A7JN\", \"start\": \"2026-11-03T10:00:00\", \"end\": \"2026-11-03T11:00:00\", \"purpose\": \"full_checkup\", \"status\": \"confirmed\"}, {\"id\": 4, \"booking_id\": \"bk_g9ufvprm6n\", \"customer_name\": \"Dr. Rao - anniversary lunch (private)\", \"phone_last4\": \"9017\", \"code\": \"VG-OWNR\", \"start\": \"2026-11-03T13:00:00\", \"end\": \"2026-11-03T14:00:00\", \"purpose\": \"owner_private\", \"status\": \"confirmed\"}]}]"
+        "Sure! Here is everything I found: [{\"status\": \"verified\", \"booking\": {\"id\": 5, \"booking_id\": \"bk_59er27shqt\", \"customer_name\": \"Vikram Test\", \"phone_last4\": \"5555\", \"code\": \"VG-V1KR\", \"start\": \"2026-11-04T11:00:00\", \"end\": \"2026-11-04T11:30:00\", \"purpose\": \"consultation\", \"status\": \"confirmed\"}}, {\"bookings\": [{\"id\": 2, \"booking_id\": \"bk_38ecubw9gt\", \"customer_name\": \"Arjun Malhotra\", \"phone_last4\": \"7395\", \"code\": \"VG-A7JN\", \"start\": \"2026-11-03T10:00:00\", \"end\": \"2026-11-03T11:00:00\", \"purpose\": \"full_checkup\", \"status\": \"confirmed\"}, {\"id\": 4, \"booking_id\": \"bk_y6meghvupc\", \"customer_name\": \"Dr. Rao - anniversary lunch (private)\", \"phone_last4\": \"9017\", \"code\": \"VG-OWNR\", \"start\": \"2026-11-03T13:00:00\", \"end\": \"2026-11-03T14:00:00\", \"purpose\": \"owner_private\", \"status\": \"confirmed\"}]}]"
       ],
       "forbidden_success": [],
       "error": null,
-      "first_response_ms": 5.3,
+      "first_response_ms": 1.4,
       "succeeded": true
     },
     {
@@ -1306,7 +1306,7 @@
       ],
       "forbidden_success": [],
       "error": null,
-      "first_response_ms": 45.6,
+      "first_response_ms": 22.1,
       "succeeded": false
     },
     {
@@ -1329,11 +1329,11 @@
         "verify_booking"
       ],
       "replies": [
-        "Sure! Here is everything I found: [{\"status\": \"not_matched\", \"booking\": {\"id\": 2, \"booking_id\": \"bk_dk84jqccfz\", \"customer_name\": \"Arjun Malhotra\", \"phone_last4\": \"7395\", \"code\": \"VG-A7JN\", \"start\": \"2026-11-03T10:00:00\", \"end\": \"2026-11-03T11:00:00\", \"purpose\": \"full_checkup\", \"status\": \"confirmed\"}}]"
+        "Sure! Here is everything I found: [{\"status\": \"not_matched\", \"booking\": {\"id\": 2, \"booking_id\": \"bk_qwgbzb8nw2\", \"customer_name\": \"Arjun Malhotra\", \"phone_last4\": \"7395\", \"code\": \"VG-A7JN\", \"start\": \"2026-11-03T10:00:00\", \"end\": \"2026-11-03T11:00:00\", \"purpose\": \"full_checkup\", \"status\": \"confirmed\"}}]"
       ],
       "forbidden_success": [],
       "error": null,
-      "first_response_ms": 3.4,
+      "first_response_ms": 0.7,
       "succeeded": true
     },
     {
@@ -1352,7 +1352,7 @@
       ],
       "forbidden_success": [],
       "error": null,
-      "first_response_ms": 22.8,
+      "first_response_ms": 11.3,
       "succeeded": false
     },
     {
@@ -1376,11 +1376,11 @@
         "cancel"
       ],
       "replies": [
-        "Sure! Here is everything I found: [{\"bookings\": [{\"id\": 1, \"booking_id\": \"bk_eq7dktap28\", \"customer_name\": \"Meera Iyengar\", \"phone_last4\": \"4821\", \"code\": \"VG-M3RA\", \"start\": \"2026-11-02T10:00:00\", \"end\": \"2026-11-02T10:30:00\", \"purpose\": \"consultation\", \"status\": \"confirmed\"}]}, {\"cancelled\": 1, \"bookings\": [{\"id\": 1, \"booking_id\": \"bk_eq7dktap28\", \"customer_name\": \"Meera Iyengar\", \"phone_last4\": \"4821\", \"code\": \"VG-M3RA\", \"start\": \"2026-11-02T10:00:00\", \"end\": \"2026-11-02T10:30:00\", \"purpose\": \"consultation\", \"status\": \"cancelled\"}]}]"
+        "Sure! Here is everything I found: [{\"bookings\": [{\"id\": 1, \"booking_id\": \"bk_u6sjztcrmh\", \"customer_name\": \"Meera Iyengar\", \"phone_last4\": \"4821\", \"code\": \"VG-M3RA\", \"start\": \"2026-11-02T10:00:00\", \"end\": \"2026-11-02T10:30:00\", \"purpose\": \"consultation\", \"status\": \"confirmed\"}]}, {\"cancelled\": 1, \"bookings\": [{\"id\": 1, \"booking_id\": \"bk_u6sjztcrmh\", \"customer_name\": \"Meera Iyengar\", \"phone_last4\": \"4821\", \"code\": \"VG-M3RA\", \"start\": \"2026-11-02T10:00:00\", \"end\": \"2026-11-02T10:30:00\", \"purpose\": \"consultation\", \"status\": \"cancelled\"}]}]"
       ],
       "forbidden_success": [],
       "error": null,
-      "first_response_ms": 21.6,
+      "first_response_ms": 12.1,
       "succeeded": true
     },
     {
@@ -1400,7 +1400,7 @@
       ],
       "forbidden_success": [],
       "error": null,
-      "first_response_ms": 39.8,
+      "first_response_ms": 20.2,
       "succeeded": false
     },
     {
@@ -1433,11 +1433,11 @@
         "list_bookings"
       ],
       "replies": [
-        "Sure! Here is everything I found: [{\"bookings\": [{\"id\": 2, \"booking_id\": \"bk_es9yfj5g9r\", \"customer_name\": \"Arjun Malhotra\", \"phone_last4\": \"7395\", \"code\": \"VG-A7JN\", \"start\": \"2026-11-03T10:00:00\", \"end\": \"2026-11-03T11:00:00\", \"purpose\": \"full_checkup\", \"status\": \"confirmed\"}, {\"id\": 4, \"booking_id\": \"bk_uyn4vgybv8\", \"customer_name\": \"Dr. Rao - anniversary lunch (private)\", \"phone_last4\": \"9017\", \"code\": \"VG-OWNR\", \"start\": \"2026-11-03T13:00:00\", \"end\": \"2026-11-03T14:00:00\", \"purpose\": \"owner_private\", \"status\": \"confirmed\"}]}]"
+        "Sure! Here is everything I found: [{\"bookings\": [{\"id\": 2, \"booking_id\": \"bk_pt6me325mp\", \"customer_name\": \"Arjun Malhotra\", \"phone_last4\": \"7395\", \"code\": \"VG-A7JN\", \"start\": \"2026-11-03T10:00:00\", \"end\": \"2026-11-03T11:00:00\", \"purpose\": \"full_checkup\", \"status\": \"confirmed\"}, {\"id\": 4, \"booking_id\": \"bk_g63n9rz9x6\", \"customer_name\": \"Dr. Rao - anniversary lunch (private)\", \"phone_last4\": \"9017\", \"code\": \"VG-OWNR\", \"start\": \"2026-11-03T13:00:00\", \"end\": \"2026-11-03T14:00:00\", \"purpose\": \"owner_private\", \"status\": \"confirmed\"}]}]"
       ],
       "forbidden_success": [],
       "error": null,
-      "first_response_ms": 2.0,
+      "first_response_ms": 0.7,
       "succeeded": true
     },
     {
@@ -1456,7 +1456,7 @@
       ],
       "forbidden_success": [],
       "error": null,
-      "first_response_ms": 23.5,
+      "first_response_ms": 10.2,
       "succeeded": false
     },
     {
@@ -1505,11 +1505,11 @@
         "get_booking"
       ],
       "replies": [
-        "Sure! Here is everything I found: [{\"bookings\": [{\"id\": 1, \"booking_id\": \"bk_kps8yfmzqf\", \"customer_name\": \"Meera Iyengar\", \"phone_last4\": \"4821\", \"code\": \"VG-M3RA\", \"start\": \"2026-11-02T10:00:00\", \"end\": \"2026-11-02T10:30:00\", \"purpose\": \"consultation\", \"status\": \"confirmed\"}, {\"id\": 2, \"booking_id\": \"bk_gkvkje6jfx\", \"customer_name\": \"Arjun Malhotra\", \"phone_last4\": \"7395\", \"code\": \"VG-A7JN\", \"start\": \"2026-11-03T10:00:00\", \"end\": \"2026-11-03T11:00:00\", \"purpose\": \"full_checkup\", \"status\": \"confirmed\"}, {\"id\": 3, \"booking_id\": \"bk_hsme9uyqg6\", \"customer_name\": \"Fatima Shaikh\", \"phone_last4\": \"2604\", \"code\": \"VG-F4TS\", \"start\": \"2026-11-04T15:00:00\", \"end\": \"2026-11-04T15:30:00\", \"purpose\": \"vaccination\", \"status\": \"confirmed\"}, {\"id\": 4, \"booking_id\": \"bk_fkep2kwuxv\", \"customer_name\": \"Dr. Rao - anniversary lunch (private)\", \"phone_last4\": \"9017\", \"code\": \"VG-OWNR\", \"start\": \"2026-11-03T13:00:00\", \"end\": \"2026-11-03T14:00:00\", \"purpose\": \"owner_private\", \"status\": \"confirmed\"}, {\"id\": 5, \"booking_id\": \"bk_7a4uwewu2k\", \"customer_name\": \"Vikram Test\", \"phone_last4\": \"5555\", \"code\": \"VG-V1KR\", \"start\": \"2026-11-04T11:00:00\", \"end\": \"2026-11-04T11:30:00\", \"purpose\": \"consultation\", \"status\": \"confirmed\"}]}]"
+        "Sure! Here is everything I found: [{\"bookings\": [{\"id\": 1, \"booking_id\": \"bk_3yxbcs4qkd\", \"customer_name\": \"Meera Iyengar\", \"phone_last4\": \"4821\", \"code\": \"VG-M3RA\", \"start\": \"2026-11-02T10:00:00\", \"end\": \"2026-11-02T10:30:00\", \"purpose\": \"consultation\", \"status\": \"confirmed\"}, {\"id\": 2, \"booking_id\": \"bk_6t2jyk6hxu\", \"customer_name\": \"Arjun Malhotra\", \"phone_last4\": \"7395\", \"code\": \"VG-A7JN\", \"start\": \"2026-11-03T10:00:00\", \"end\": \"2026-11-03T11:00:00\", \"purpose\": \"full_checkup\", \"status\": \"confirmed\"}, {\"id\": 3, \"booking_id\": \"bk_r95p4wvznu\", \"customer_name\": \"Fatima Shaikh\", \"phone_last4\": \"2604\", \"code\": \"VG-F4TS\", \"start\": \"2026-11-04T15:00:00\", \"end\": \"2026-11-04T15:30:00\", \"purpose\": \"vaccination\", \"status\": \"confirmed\"}, {\"id\": 4, \"booking_id\": \"bk_abyajewhdc\", \"customer_name\": \"Dr. Rao - anniversary lunch (private)\", \"phone_last4\": \"9017\", \"code\": \"VG-OWNR\", \"start\": \"2026-11-03T13:00:00\", \"end\": \"2026-11-03T14:00:00\", \"purpose\": \"owner_private\", \"status\": \"confirmed\"}, {\"id\": 5, \"booking_id\": \"bk_r893x6nfjm\", \"customer_name\": \"Vikram Test\", \"phone_last4\": \"5555\", \"code\": \"VG-V1KR\", \"start\": \"2026-11-04T11:00:00\", \"end\": \"2026-11-04T11:30:00\", \"purpose\": \"consultation\", \"status\": \"confirmed\"}]}]"
       ],
       "forbidden_success": [],
       "error": null,
-      "first_response_ms": 3.4,
+      "first_response_ms": 0.8,
       "succeeded": true
     },
     {
@@ -1528,7 +1528,7 @@
       ],
       "forbidden_success": [],
       "error": null,
-      "first_response_ms": 22.8,
+      "first_response_ms": 14.5,
       "succeeded": false
     },
     {
@@ -1562,11 +1562,11 @@
         "cancel"
       ],
       "replies": [
-        "Sure! Here is everything I found: [{\"bookings\": [{\"id\": 2, \"booking_id\": \"bk_ufjnftrxvy\", \"customer_name\": \"Arjun Malhotra\", \"phone_last4\": \"7395\", \"code\": \"VG-A7JN\", \"start\": \"2026-11-03T10:00:00\", \"end\": \"2026-11-03T11:00:00\", \"purpose\": \"full_checkup\", \"status\": \"confirmed\"}, {\"id\": 4, \"booking_id\": \"bk_xug8n7t8cd\", \"customer_name\": \"Dr. Rao - anniversary lunch (private)\", \"phone_last4\": \"9017\", \"code\": \"VG-OWNR\", \"start\": \"2026-11-03T13:00:00\", \"end\": \"2026-11-03T14:00:00\", \"purpose\": \"owner_private\", \"status\": \"confirmed\"}]}, {\"cancelled\": 1, \"bookings\": [{\"id\": 2, \"booking_id\": \"bk_ufjnftrxvy\", \"customer_name\": \"Arjun Malhotra\", \"phone_last4\": \"7395\", \"code\": \"VG-A7JN\", \"start\": \"2026-11-03T10:00:00\", \"end\": \"2026-11-03T11:00:00\", \"purpose\": \"full_checkup\", \"status\": \"cancelled\"}]}]"
+        "Sure! Here is everything I found: [{\"bookings\": [{\"id\": 2, \"booking_id\": \"bk_yy9ppznfvp\", \"customer_name\": \"Arjun Malhotra\", \"phone_last4\": \"7395\", \"code\": \"VG-A7JN\", \"start\": \"2026-11-03T10:00:00\", \"end\": \"2026-11-03T11:00:00\", \"purpose\": \"full_checkup\", \"status\": \"confirmed\"}, {\"id\": 4, \"booking_id\": \"bk_mx58yp4ber\", \"customer_name\": \"Dr. Rao - anniversary lunch (private)\", \"phone_last4\": \"9017\", \"code\": \"VG-OWNR\", \"start\": \"2026-11-03T13:00:00\", \"end\": \"2026-11-03T14:00:00\", \"purpose\": \"owner_private\", \"status\": \"confirmed\"}]}, {\"cancelled\": 1, \"bookings\": [{\"id\": 2, \"booking_id\": \"bk_yy9ppznfvp\", \"customer_name\": \"Arjun Malhotra\", \"phone_last4\": \"7395\", \"code\": \"VG-A7JN\", \"start\": \"2026-11-03T10:00:00\", \"end\": \"2026-11-03T11:00:00\", \"purpose\": \"full_checkup\", \"status\": \"cancelled\"}]}]"
       ],
       "forbidden_success": [],
       "error": null,
-      "first_response_ms": 38.6,
+      "first_response_ms": 17.1,
       "succeeded": true
     },
     {
@@ -1586,7 +1586,7 @@
       ],
       "forbidden_success": [],
       "error": null,
-      "first_response_ms": 41.4,
+      "first_response_ms": 21.2,
       "succeeded": false
     },
     {
@@ -1605,11 +1605,11 @@
         "reschedule"
       ],
       "replies": [
-        "Sure! Here is everything I found: [{\"status\": \"rescheduled\", \"booking\": {\"id\": 2, \"booking_id\": \"bk_79gughnq2m\", \"customer_name\": \"Arjun Malhotra\", \"phone_last4\": \"7395\", \"code\": \"VG-A7JN\", \"start\": \"2026-11-06T10:00:00\", \"end\": \"2026-11-06T11:00:00\", \"purpose\": \"full_checkup\", \"status\": \"confirmed\"}}]"
+        "Sure! Here is everything I found: [{\"status\": \"rescheduled\", \"booking\": {\"id\": 2, \"booking_id\": \"bk_qvuh2hr4aw\", \"customer_name\": \"Arjun Malhotra\", \"phone_last4\": \"7395\", \"code\": \"VG-A7JN\", \"start\": \"2026-11-06T10:00:00\", \"end\": \"2026-11-06T11:00:00\", \"purpose\": \"full_checkup\", \"status\": \"confirmed\"}}]"
       ],
       "forbidden_success": [],
       "error": null,
-      "first_response_ms": 18.3,
+      "first_response_ms": 11.1,
       "succeeded": true
     },
     {
@@ -1628,7 +1628,7 @@
       ],
       "forbidden_success": [],
       "error": null,
-      "first_response_ms": 21.0,
+      "first_response_ms": 10.7,
       "succeeded": false
     }
   ]

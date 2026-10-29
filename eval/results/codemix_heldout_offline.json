@@ -2,17 +2,17 @@
   "suite": "codemix",
   "measured_with": "rule-based normalizer on typed text (offline, no ASR)",
   "total": 20,
-  "correct": 10,
-  "accuracy": 0.5,
+  "correct": 9,
+  "accuracy": 0.45,
   "by_lang": {
-    "tenglish": 0.714,
+    "tenglish": 0.571,
     "hinglish": 0.571,
     "english": 0.167
   },
   "field_accuracy": {
     "date": 0.75,
     "time": 0.75,
-    "service": 0.9
+    "service": 0.85
   },
   "failures": [
     {
@@ -35,6 +35,32 @@
         "date": false,
         "time": true,
         "service": true
+      },
+      "issue_ok": true,
+      "correct": false
+    },
+    {
+      "id": "HO03",
+      "lang": "tenglish",
+      "text": "ellundi padinnara ki checkup",
+      "expected": {
+        "date": "2026-11-04",
+        "time": "10:30",
+        "service": "consultation"
+      },
+      "got": {
+        "date": "2026-11-04",
+        "time": "10:30",
+        "service": null
+      },
+      "expected_issue": null,
+      "issues": [
+        "ambiguous_service"
+      ],
+      "fields_ok": {
+        "date": true,
+        "time": true,
+        "service": false
       },
       "issue_ok": true,
       "correct": false

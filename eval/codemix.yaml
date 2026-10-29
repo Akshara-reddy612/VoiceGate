@@ -22,7 +22,9 @@ utterances:
   - {id: CM08, lang: tenglish, text: "repu padi gantalaki", expected: {date: "2026-11-03", time: "10:00", service: null}}
   - {id: CM09, lang: tenglish, text: "repu morning 10 ki consultation please", expected: {date: "2026-11-03", time: "10:00", service: consultation}}
   - {id: CM10, lang: tenglish, text: "ellundi evening 4:30 ki", expected: {date: "2026-11-04", time: "16:30", service: null}}
-  - {id: CM11, lang: tenglish, text: "shanivaram 11 ki checkup", expected: {date: "2026-11-07", time: "11:00", service: consultation}}
+  # CM11 relabelled (product decision, not tuning): a bare "checkup" could be a consultation or a full body
+  # checkup, so the correct result is "no service + ask". Was: service: consultation.
+  - {id: CM11, lang: tenglish, text: "shanivaram 11 ki checkup", expected: {date: "2026-11-07", time: "11:00", service: null}, issue: ambiguous_service}
   - {id: CM12, lang: tenglish, text: "repu naalugunnara ki", expected: {date: "2026-11-03", time: "16:30", service: null}}
   - {id: CM13, lang: tenglish, text: "vacche somavaram 9 ki", expected: {date: "2026-11-09", time: "09:00", service: null}}
   - {id: CM14, lang: tenglish, text: "ninna 5 ki book chesanu", expected: {date: "2026-11-01", time: "17:00", service: null}, issue: past_date}

@@ -290,3 +290,11 @@ def test_prepare_booking_asks_instead_of_guessing(gate, db_path):
     r = call(gate, ctx, "prepare_booking", **{**DETAILS, "date": "next week"})
     assert r["error"]["code"] == "AMBIGUOUS_DATE"
     assert booking_count(db_path) == 0
+
+
+@pytest.mark.parametrize("service", ["checkup", "chinna checkup"])
+def test_prepare_booking_asks_which_service_for_bare_checkup(gate, db_path, service):
+    r = call(gate, caller(), "prepare_booking", **{**DETAILS, "service": service})
+    assert r["error"]["code"] == "AMBIGUOUS_SERVICE"
+    assert r["error"]["message"] == "Do you mean General consultation or Full body checkup?"
+    assert booking_count(db_path) == 0

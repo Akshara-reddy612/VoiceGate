@@ -92,7 +92,7 @@ export default function Bookings() {
         </div>
       </div>
 
-      <div className="grid grid-2" style={{ gridTemplateColumns: "minmax(0, 2fr) minmax(260px, 1fr)", alignItems: "start" }}>
+      <div className="grid split">
         <section className="card" aria-labelledby="bk-h">
           <h2 id="bk-h" className="sr-only" style={{ position: "absolute", left: -9999 }}>Booking list</h2>
           <div className="toolbar">

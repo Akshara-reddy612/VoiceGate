@@ -5,13 +5,15 @@ import Bookings from "./pages/Bookings.jsx";
 import Events from "./pages/Events.jsx";
 import Metrics from "./pages/Metrics.jsx";
 import CallerTest from "./pages/CallerTest.jsx";
+import VoiceCall from "./pages/VoiceCall.jsx";
 import Compare from "./pages/Compare.jsx";
 
 const PAGES = [
   { id: "bookings", label: "Bookings", Component: Bookings },
   { id: "events", label: "Live events", Component: Events },
   { id: "metrics", label: "Metrics", Component: Metrics },
-  { id: "caller", label: "Caller test", Component: CallerTest },
+  { id: "voice", label: "Voice call", Component: VoiceCall },
+  { id: "caller", label: "Caller test (offline)", Component: CallerTest },
   { id: "compare", label: "Baseline vs VoiceGate", Component: Compare },
 ];
 

@@ -87,6 +87,9 @@ class BookingService:
             return BookingError(code=ErrorCode.INVALID_INPUT, message="Please give a 10-digit phone number.")
 
         service = self.resolve_service(req.service)
+        if service is None and (options := self.config.service_options(req.service)):
+            labels = " or ".join(self.config.services[k].label for k in options)
+            return BookingError(code=ErrorCode.AMBIGUOUS_SERVICE, message=f"Do you mean {labels}?")
         if service is None:
             names = ", ".join(s.label for s in self.config.services.values())
             return BookingError(code=ErrorCode.UNKNOWN_SERVICE, message=f"We offer: {names}.")
@@ -269,6 +272,12 @@ class BookingService:
                 saved.booking_id, saved.customer_name, saved.phone_last4, saved.code,
                 saved.start, saved.end, saved.purpose, saved.status,
             ) != expected:
+                # The caller will be told it is NOT booked, so the row must not stay "confirmed" (no phantom
+                # booking, slot not blocked). Best effort: if even this fails, the error below still stands.
+                try:
+                    conn.execute("UPDATE bookings SET status = 'failed' WHERE id = ?", (row_id,))
+                except sqlite3.Error:
+                    pass
                 return BookingResult(
                     ok=False,
                     error=BookingError(

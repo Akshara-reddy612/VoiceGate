@@ -43,8 +43,11 @@ cases:
     steps: [{caller: A, say: "consultation on saturday at 1 pm, my name is Divya, 9000000007"}, {caller: A, say: "yes"}]
     expect: {new_bookings: [["2026-11-07", "13:00", consultation]]}
   - id: BK08
-    desc: Tenglish weekday morning
-    steps: [{caller: A, say: "guruvaram poddunna 9 ki checkup, I am Suresh, 9000000008"}, {caller: A, say: "sare"}]
+    desc: Tenglish weekday morning; bare "checkup" is ambiguous, so the caller is asked which service
+    steps:
+      - {caller: A, say: "guruvaram poddunna 9 ki checkup, I am Suresh, 9000000008"}
+      - {caller: A, say: "general"}
+      - {caller: A, say: "sare"}
     expect: {new_bookings: [["2026-11-05", "09:00", consultation]]}
   - id: BK30
     desc: Hinglish dedh baje (1:30 PM)

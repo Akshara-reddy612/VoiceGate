@@ -11,7 +11,7 @@ from dataclasses import asdict
 import pytest
 
 from agent.agent import VoiceGateAgent, tool_schemas
-from agent.llm_loop import GeminiChatModel, Message, ModelReply, ToolCall
+from agent.llm_loop import GeminiChatModel, Message, ModelReply, ToolCall, gemini_configured
 from agent.text_agent import LLMTextAgent, build_text_agent
 from agent.tools import build_gate
 from booking.confirm import ConfirmationStore
@@ -201,7 +201,14 @@ def test_gemini_contents_conversion_offline():
     assert isinstance(fr, types.FunctionResponse) and fr.name == "get_faq" and fr.response == {"status": "ok"} and fr.id == "c1"
 
 
-@pytest.mark.skipif(not os.environ.get("GOOGLE_API_KEY"), reason="GOOGLE_API_KEY not set: live Gemini not verified")
+@pytest.mark.parametrize("value, configured", [("", False), ("your-google-api-key", False), ("AIzaRealLookingKey", True)])
+def test_placeholder_key_is_not_configured(monkeypatch, value, configured):
+    # Regression: a fresh `copy .env.example .env` made the app call Gemini with the placeholder key.
+    monkeypatch.setenv("GOOGLE_API_KEY", value)
+    assert gemini_configured() is configured
+
+
+@pytest.mark.skipif(not gemini_configured(), reason="GOOGLE_API_KEY not set (or placeholder): live Gemini not verified")
 def test_live_gemini_answers_faq_through_gate(db_path, svc):
     agent = build_text_agent(db_path, service=svc, model=GeminiChatModel())
     r = run(agent, "What are your opening hours?")

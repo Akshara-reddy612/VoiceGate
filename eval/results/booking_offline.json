@@ -42,7 +42,7 @@
         {
           "caller": "A",
           "say": "yes",
-          "reply": "Confirmed. Your General consultation is booked for Tuesday 3 November at 10:00 AM. Your booking code is VG-AYAM. Please keep it to change or cancel later.",
+          "reply": "Confirmed. Your General consultation is booked for Tuesday 3 November at 10:00 AM. Your booking code is VG-5PSJ. Please keep it to change or cancel later.",
           "tools": [
             "book_appointment"
           ]
@@ -82,7 +82,7 @@
         {
           "caller": "A",
           "say": "avunu",
-          "reply": "Confirmed. Your General consultation is booked for Tuesday 3 November at 5:00 PM. Your booking code is VG-ZCAK. Please keep it to change or cancel later.",
+          "reply": "Confirmed. Your General consultation is booked for Tuesday 3 November at 5:00 PM. Your booking code is VG-RXC7. Please keep it to change or cancel later.",
           "tools": [
             "book_appointment"
           ]
@@ -122,7 +122,7 @@
         {
           "caller": "A",
           "say": "haan ji",
-          "reply": "Confirmed. Your Vaccination is booked for Tuesday 3 November at 10:30 AM. Your booking code is VG-SH6Z. Please keep it to change or cancel later.",
+          "reply": "Confirmed. Your Vaccination is booked for Tuesday 3 November at 10:30 AM. Your booking code is VG-95T5. Please keep it to change or cancel later.",
           "tools": [
             "book_appointment"
           ]
@@ -192,7 +192,7 @@
         {
           "caller": "A",
           "say": "yes",
-          "reply": "Confirmed. Your Full body checkup is booked for Wednesday 4 November at 11:00 AM. Your booking code is VG-NZDW. Please keep it to change or cancel later.",
+          "reply": "Confirmed. Your Full body checkup is booked for Wednesday 4 November at 11:00 AM. Your booking code is VG-N5XB. Please keep it to change or cancel later.",
           "tools": [
             "book_appointment"
           ]
@@ -232,7 +232,7 @@
         {
           "caller": "A",
           "say": "theek hai, haan",
-          "reply": "Confirmed. Your General consultation is booked for Wednesday 4 November at 4:00 PM. Your booking code is VG-RX85. Please keep it to change or cancel later.",
+          "reply": "Confirmed. Your General consultation is booked for Wednesday 4 November at 4:00 PM. Your booking code is VG-S2G6. Please keep it to change or cancel later.",
           "tools": [
             "book_appointment"
           ]
@@ -272,7 +272,7 @@
         {
           "caller": "A",
           "say": "yes please",
-          "reply": "Confirmed. Your Vaccination is booked for Friday 6 November at 3:00 PM. Your booking code is VG-RKXX. Please keep it to change or cancel later.",
+          "reply": "Confirmed. Your Vaccination is booked for Friday 6 November at 3:00 PM. Your booking code is VG-KHG2. Please keep it to change or cancel later.",
           "tools": [
             "book_appointment"
           ]
@@ -312,7 +312,7 @@
         {
           "caller": "A",
           "say": "yes",
-          "reply": "Confirmed. Your General consultation is booked for Saturday 7 November at 1:00 PM. Your booking code is VG-XYZX. Please keep it to change or cancel later.",
+          "reply": "Confirmed. Your General consultation is booked for Saturday 7 November at 1:00 PM. Your booking code is VG-3VSN. Please keep it to change or cancel later.",
           "tools": [
             "book_appointment"
           ]
@@ -321,7 +321,7 @@
     },
     {
       "id": "BK08",
-      "desc": "Tenglish weekday morning",
+      "desc": "Tenglish weekday morning; bare \"checkup\" is ambiguous, so the caller is asked which service",
       "outcome_ok": true,
       "double_bookings": 0,
       "false_confirmations": [],
@@ -344,6 +344,12 @@
         {
           "caller": "A",
           "say": "guruvaram poddunna 9 ki checkup, I am Suresh, 9000000008",
+          "reply": "Do you mean General consultation or Full body checkup?",
+          "tools": []
+        },
+        {
+          "caller": "A",
+          "say": "general",
           "reply": "General consultation for Suresh on Thursday 5 November at 9:00 AM. Shall I confirm this booking?",
           "tools": [
             "prepare_booking"
@@ -352,7 +358,7 @@
         {
           "caller": "A",
           "say": "sare",
-          "reply": "Confirmed. Your General consultation is booked for Thursday 5 November at 9:00 AM. Your booking code is VG-G3TG. Please keep it to change or cancel later.",
+          "reply": "Confirmed. Your General consultation is booked for Thursday 5 November at 9:00 AM. Your booking code is VG-ET9D. Please keep it to change or cancel later.",
           "tools": [
             "book_appointment"
           ]
@@ -392,7 +398,7 @@
         {
           "caller": "A",
           "say": "ji haan",
-          "reply": "Confirmed. Your Vaccination is booked for Tuesday 3 November at 1:30 PM. Your booking code is VG-5BMT. Please keep it to change or cancel later.",
+          "reply": "Confirmed. Your Vaccination is booked for Tuesday 3 November at 1:30 PM. Your booking code is VG-9CVU. Please keep it to change or cancel later.",
           "tools": [
             "book_appointment"
           ]
@@ -440,7 +446,7 @@
         {
           "caller": "A",
           "say": "yes",
-          "reply": "Confirmed. Your General consultation is booked for Tuesday 3 November at 10:30 AM. Your booking code is VG-5R6T. Please keep it to change or cancel later.",
+          "reply": "Confirmed. Your General consultation is booked for Tuesday 3 November at 10:30 AM. Your booking code is VG-FYVK. Please keep it to change or cancel later.",
           "tools": [
             "book_appointment"
           ]
@@ -540,7 +546,7 @@
         {
           "caller": "A",
           "say": "yes",
-          "reply": "Confirmed. Your General consultation is booked for Tuesday 3 November at 3:00 PM. Your booking code is VG-G6SM. Please keep it to change or cancel later.",
+          "reply": "Confirmed. Your General consultation is booked for Tuesday 3 November at 3:00 PM. Your booking code is VG-AT2Q. Please keep it to change or cancel later.",
           "tools": [
             "book_appointment"
           ]
@@ -596,7 +602,7 @@
         {
           "caller": "B",
           "say": "haan",
-          "reply": "Confirmed. Your Vaccination is booked for Tuesday 3 November at 11:00 AM. Your booking code is VG-7FAE. Please keep it to change or cancel later.",
+          "reply": "Confirmed. Your Vaccination is booked for Tuesday 3 November at 11:00 AM. Your booking code is VG-TGZB. Please keep it to change or cancel later.",
           "tools": [
             "book_appointment"
           ]
@@ -661,7 +667,7 @@
         {
           "caller": "B",
           "say": "yes",
-          "reply": "Confirmed. Your General consultation is booked for Wednesday 4 November at 11:00 AM. Your booking code is VG-HHWS. Please keep it to change or cancel later.",
+          "reply": "Confirmed. Your General consultation is booked for Wednesday 4 November at 11:00 AM. Your booking code is VG-R9GB. Please keep it to change or cancel later.",
           "tools": [
             "book_appointment"
           ]
@@ -917,7 +923,7 @@
         {
           "caller": "A",
           "say": "yes",
-          "reply": "Confirmed. Your General consultation is booked for Tuesday 3 November at 11:30 AM. Your booking code is VG-CBGY. Please keep it to change or cancel later.",
+          "reply": "Confirmed. Your General consultation is booked for Tuesday 3 November at 11:30 AM. Your booking code is VG-VUJT. Please keep it to change or cancel later.",
           "tools": [
             "book_appointment"
           ]
@@ -963,7 +969,7 @@
         {
           "caller": "A",
           "say": "yes",
-          "reply": "Confirmed. Your General consultation is booked for Tuesday 3 November at 10:00 AM. Your booking code is VG-TXNP. Please keep it to change or cancel later.",
+          "reply": "Confirmed. Your General consultation is booked for Tuesday 3 November at 10:00 AM. Your booking code is VG-G7DJ. Please keep it to change or cancel later.",
           "tools": [
             "book_appointment"
           ]

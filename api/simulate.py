@@ -18,7 +18,10 @@ from collections import OrderedDict
 from pathlib import Path
 from typing import Any, Literal
 
-from agent.llm_loop import ChatModel, GeminiChatModel, gemini_configured
+import httpx
+from google.genai import errors as genai_errors
+
+from agent.llm_loop import REQUEST_TIMEOUT_SECONDS, RETRY_ATTEMPTS, RETRY_STATUS_CODES, ChatModel, quota_details, GeminiChatModel, gemini_configured
 from agent.text_agent import build_text_agent
 from agent.tools import build_gate
 from booking.confirm import ConfirmationStore
@@ -32,10 +35,62 @@ MAX_SESSIONS = 50
 
 
 class SimulationError(Exception):
-    def __init__(self, status: int, message: str) -> None:
+    def __init__(self, status: int, message: str, kind: str | None = None, **info: Any) -> None:
         super().__init__(message)
         self.status = status
         self.message = message
+        self.kind = kind  # set for model-provider failures so the UI can say so instead of "request failed"
+        self.info = info
+
+    def detail(self) -> str | dict[str, Any]:
+        return {"kind": self.kind, "message": self.message, **self.info} if self.kind else self.message
+
+
+def _model_failure(e: Exception, model_name: str) -> SimulationError | None:
+    """Gemini's own failures become explicit provider errors (never a fake success, never a bare 500).
+    Anything else is a real bug and is re-raised unchanged."""
+    timed_out = isinstance(e, (httpx.TimeoutException, TimeoutError)) or (
+        isinstance(e, genai_errors.APIError) and e.status == "DEADLINE_EXCEEDED"  # Google enforced our deadline
+    )
+    if timed_out:
+        return SimulationError(504, f"Gemini did not answer within {REQUEST_TIMEOUT_SECONDS}s (model '{model_name}'). "
+                                    "Try again.", kind="provider_timeout", model=model_name)
+    if not isinstance(e, genai_errors.APIError):
+        return None
+    if e.code == 429:  # quota / rate limit: Gemini limits are per Google Cloud project, per model, per minute/day
+        q = quota_details(e)
+        which = f" ({q['quota_id']}, limit {q['quota_limit']})" if q["quota_id"] else ""
+        when = ("This is a daily quota: it resets at midnight Pacific time." if q["daily"] else
+                f"Google suggests retrying in {q['retry_after_seconds']:.0f} s." if q["retry_after_seconds"] is not None
+                else "Wait a minute and try again.")
+        return SimulationError(
+            429,
+            f"Model quota exhausted: Google is rate-limiting this project for '{model_name}'{which}. {when} "
+            "Nothing was evaluated. Check your limits at https://aistudio.google.com/rate-limit; to use another "
+            "model, set VOICEGATE_TEXT_MODEL in .env and restart the API.",
+            kind="provider_quota", model=model_name, provider_status=f"{e.code} {e.status}", **q,
+        )
+    if e.code in RETRY_STATUS_CODES:  # 503: still overloaded after the bounded retries
+        return SimulationError(
+            503,
+            f"The model provider is unavailable: Google is overloaded (high demand) for '{model_name}' and still "
+            f"failed after {RETRY_ATTEMPTS} attempts. Nothing was evaluated. Try again in a minute, or set "
+            "VOICEGATE_TEXT_MODEL in .env to another model and restart the API.",
+            kind="provider_unavailable", model=model_name, provider_status=f"{e.code} {e.status}", attempts=RETRY_ATTEMPTS,
+        )
+    hint = (" Set VOICEGATE_TEXT_MODEL in .env to a model your key can use and restart the API." if e.code == 404 else "")
+    return SimulationError(502, f"Gemini request failed ({e.code} {e.status}) for model '{model_name}': {e.message}{hint}",
+                           kind="provider_error", model=model_name, provider_status=f"{e.code} {e.status}")
+
+
+async def _turn(agent: Any, text: str):
+    try:
+        return await agent.turn(text)
+    except Exception as e:
+        model_name = getattr(getattr(agent, "model", None), "name", "unknown")
+        if failure := _model_failure(e, model_name):
+            raise failure from e
+        raise
 
 
 def _calls(turn) -> list[dict[str, Any]]:
@@ -85,7 +140,7 @@ class Simulator:
             entry = (mode, agent, brain)
         self._remember(sid, entry)
         _, agent, brain = entry
-        turn = await agent.turn(text)
+        turn = await _turn(agent, text)
         return {"session_id": sid, "mode": mode, "brain": brain, "reply": turn.reply,
                 "tool_calls": _calls(turn), "blocked": turn.blocked,
                 "database": "real" if mode == "voicegate" else "synthetic"}
@@ -104,7 +159,7 @@ class Simulator:
             agent = build_text_agent(db, service=svc, gate=gate, model=model, session_id=f"replay-{attack.id}")
         turns, calls, blocked = [], [], False
         for text in attack.turns:
-            t = await agent.turn(text)
+            t = await _turn(agent, text)
             turns.append({"caller": text, "reply": t.reply})
             calls += _calls(t)
             blocked = blocked or t.blocked

@@ -23,7 +23,7 @@ services:
   consultation:
     label: "General consultation"
     duration_minutes: 30
-    aliases: ["consultation", "consult", "doctor", "checkup", "check-up", "fever", "cold"]
+    aliases: ["consultation", "consult", "doctor", "fever", "cold"]
   full_checkup:
     label: "Full body checkup"
     duration_minutes: 60
@@ -32,6 +32,13 @@ services:
     label: "Vaccination"
     duration_minutes: 30
     aliases: ["vaccination", "vaccine", "injection", "shot"]
+
+# Words that could mean more than one service. The agent asks which one instead of guessing.
+# ("chinna checkup" / "normal checkup" contain "checkup", so they are asked about too.)
+ambiguous_aliases:
+  checkup: [consultation, full_checkup]
+  check-up: [consultation, full_checkup]
+  check up: [consultation, full_checkup]
 
 # Static FAQ for get_faq(topic). Short, safe, public text only.
 faq:

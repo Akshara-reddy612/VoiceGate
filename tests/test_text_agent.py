@@ -79,7 +79,9 @@ def test_extract_time(text, expected):
 
 def test_extract_service(svc):
     assert extract_service("I need a full body checkup", svc.config) == "full_checkup"
-    assert extract_service("just a checkup", svc.config) == "consultation"
+    # a bare "checkup" could be either service: no silent pick (the normalizer flags it so the agent asks)
+    assert extract_service("just a checkup", svc.config) is None
+    assert svc.config.service_options("just a checkup") == ["consultation", "full_checkup"]
     assert extract_service("vaccine for my son", svc.config) == "vaccination"
     assert extract_service("haircut", svc.config) is None
 
@@ -231,16 +233,15 @@ def _book(db_path, svc, session, text):
 
 def test_tenglish_booking_conversation(agent, db_path):
     r = say(agent, "repu sayantram 5 ki consultation kavali, naa peru Ravi, 9876543210")
-    # name isn't parsed from Telugu "naa peru" -> agent asks; date/time/service/phone were understood
-    assert r.reply == "May I have your name, please?"
-    r = say(agent, "Ravi")
+    # every detail, including the Telugu "naa peru" name, is understood in one turn -> straight to read-back
     assert r.reply == "General consultation for Ravi on Thursday 29 October at 5:00 PM. Shall I confirm this booking?"
     assert say(agent, "avunu").reply.startswith("Confirmed.")
 
 
 def test_part_of_day_without_hour_asks_for_hour(agent):
     r = say(agent, "kal shaam ko consultation, I'm Ravi, 9876543210")
-    assert r.reply == "What time in the evening?"
+    # no hour given: offer the free evening slots instead of guessing one
+    assert r.reply.startswith("In the evening on Thursday 29 October we have 4:00 PM")
     assert "5:00 PM" in say(agent, "5 baje").reply
 
 
@@ -292,3 +293,147 @@ def test_next_week_without_day_asks_which_day(agent):
     assert r.reply == "Which day next week would you like?"
     r = say(agent, "wednesday")
     assert "Wednesday 4 November" in r.reply  # next week relative to Wed 28 Oct, not tomorrow-ish
+
+
+# ---------- Tenglish name + part-of-day ("na peru Bob ... repu evening") ----------
+
+EXACT = "na peru bob and repu evening ki appointment kavali"
+
+
+@pytest.mark.parametrize(
+    "text",
+    [EXACT, "naa peru Bob", "naa peru Bob repu evening appointment kavali", "naa peru Bob andi",
+     "mera naam Bob hai, kal shaam ko", "Na Peru BOB"],
+)
+def test_telugu_and_hindi_name_phrases(text):
+    assert extract_name(text) == "Bob"
+
+
+def test_name_phrase_does_not_swallow_date_words():
+    assert extract_name("naa peru Lakshmi repu sayantram") == "Lakshmi"
+    assert extract_name("my name is Ravi Kumar and my number is") == "Ravi Kumar"  # English unchanged
+
+
+def test_exact_tenglish_sentence_full_flow(agent, db_path):
+    r = say(agent, EXACT)
+    assert r.reply == "What is your 10-digit phone number?" and not r.tool_calls  # name/date kept, not re-asked
+    assert agent.slots == {"name": "Bob", "date": "2026-10-29"} and agent.part_hint == "evening"
+    assert say(agent, "9000000001").reply.startswith("Which service do you need?")
+    r = say(agent, "consultation")
+    # never guesses an exact time from "evening": lists the free evening starts and asks
+    assert r.reply == ("In the evening on Thursday 29 October we have 4:00 PM, 4:30 PM, 5:00 PM, 5:30 PM. "
+                       "Which time would you like?")
+    assert [c.tool for c in r.tool_calls] == ["get_availability"] and "time" not in agent.slots
+    r = say(agent, "5")  # "5" after "evening" = 5 PM
+    assert r.reply == "General consultation for Bob on Thursday 29 October at 5:00 PM. Shall I confirm this booking?"
+    assert bookings(db_path) == []  # read-back alone saves nothing
+    r = say(agent, "avunu")
+    assert r.reply.startswith("Confirmed.")
+    assert [tuple(b) for b in bookings(db_path)] == [("Bob", "2026-10-29T17:00:00", "consultation")]
+
+
+def test_repu_evening_without_name_asks_only_for_missing_details(agent):
+    assert say(agent, "repu evening appointment kavali").reply == "May I have your name, please?"
+    assert agent.slots == {"date": "2026-10-29"}
+    say(agent, "Bob")
+    say(agent, "9000000001")
+    assert say(agent, "vaccination").reply.startswith("In the evening on Thursday 29 October we have")
+
+
+def test_evening_offer_skips_taken_slots_and_reveals_no_names(db_path, svc):
+    other = build_text_agent(db_path, service=svc, session_id="other")
+    say(other, "book consultation tomorrow 5pm, my name is Sita Devi, 9123456789")
+    say(other, "yes")
+    a = build_text_agent(db_path, service=svc, session_id="bob")
+    r = say(a, "naa peru Bob, repu evening consultation, 9000000001")
+    assert "5:00 PM" not in r.reply and "4:30 PM, 5:30 PM" in r.reply and "Sita" not in r.reply
+
+
+def test_multiple_evening_times_are_not_guessed(agent, db_path):
+    r = say(agent, "naa peru Bob, repu evening 5 or 6 ki consultation, 9000000001")
+    assert r.reply == "Did you mean 5:00 PM or 6:00 PM? Please pick one." and bookings(db_path) == []
+    assert "prepare_booking" not in [c.tool for c in r.tool_calls]
+    r = say(agent, "naa peru Bob, repu evening ki 5 leda 6 leda 7 consultation")
+    assert "prepare_booking" not in [c.tool for c in r.tool_calls] and bookings(db_path) == []
+    r = say(agent, "naa peru Bob, repu 4pm or 5pm consultation, 9000000001")
+    assert r.reply == "Did you mean 4:00 PM or 5:00 PM? Please pick one."
+
+
+def test_no_evening_slots_on_short_day(agent):
+    # Saturday closes at 14:00: say so and offer the closest free times instead of guessing.
+    r = say(agent, "naa peru Bob, saturday evening consultation, 9000000001")
+    assert r.reply.startswith("Sorry, there are no evening slots on Saturday 31 October. The closest free times are")
+    assert "1:30 PM" in r.reply
+
+
+# ---------- reported transcript: "sayantaram", "normal", "chinna checkup" ----------
+
+
+def test_reported_conversation_end_to_end(agent, db_path):
+    r = say(agent, "naa peru Bob, repu sayantaram appointment kavali")
+    assert r.reply == "What is your 10-digit phone number?" and agent.part_hint == "evening"
+    say(agent, "9000000001")
+    r = say(agent, "normal")  # not a service we offer: clearer re-ask, not the identical prompt
+    assert r.reply == "Sorry, I didn't catch the service. Please choose General consultation, Full body checkup or Vaccination."
+    r = say(agent, "chinna checkup")  # could be either: ask, never pick
+    assert r.reply == "Do you mean General consultation or Full body checkup?" and "service" not in agent.slots
+    r = say(agent, "general")
+    # evening was remembered from turn 1: straight to real evening slots, no second time question
+    assert r.reply.startswith("In the evening on Thursday 29 October we have 4:00 PM")
+    assert [c.tool for c in r.tool_calls] == ["get_availability"]
+    r = say(agent, "5")
+    assert r.reply == "General consultation for Bob on Thursday 29 October at 5:00 PM. Shall I confirm this booking?"
+    assert bookings(db_path) == []
+    r = say(agent, "avunu")
+    code = r.reply.split("booking code is ")[1].split(".")[0]
+    row = connect(db_path).execute("SELECT code, start, purpose, status FROM bookings").fetchone()
+    # what was spoken matches what was committed and read back
+    assert tuple(row) == (code, "2026-10-29T17:00:00", "consultation", "confirmed")
+    assert r.tool_calls[0].result["status"] == "confirmed" and r.tool_calls[0].result["code"] == code
+    # repeating the confirmation must not create a second booking
+    for again in ("avunu", "yes", "haan confirm"):
+        assert not say(agent, again).reply.startswith("Confirmed.")
+    assert len(bookings(db_path)) == 1
+
+
+@pytest.mark.parametrize("answer, service", [("full body", "full_checkup"), ("second", "full_checkup"),
+                                             ("2", "full_checkup"), ("first", "consultation"),
+                                             ("general consultation", "consultation")])
+def test_service_clarification_answers(agent, answer, service):
+    say(agent, "naa peru Bob, repu 10am checkup, 9000000001")
+    assert say(agent, answer).reply.startswith(
+        ("Full body checkup" if service == "full_checkup" else "General consultation") + " for Bob")
+    assert agent.slots["service"] == service
+
+
+@pytest.mark.parametrize("word", ["sayantram", "sayantaram", "sayanthram"])
+def test_evening_spelling_offers_slots_without_extra_time_question(agent, word):
+    r = say(agent, f"naa peru Bob, repu {word} consultation, 9000000001")
+    assert r.reply.startswith("In the evening on Thursday 29 October we have")
+
+
+def test_confirmation_not_spoken_if_write_not_verified(db_path, svc, monkeypatch):
+    a = build_text_agent(db_path, service=svc, session_id="verify")
+    say(a, "naa peru Bob, repu 10am consultation, 9000000001")
+    monkeypatch.setattr(svc, "_read_back", lambda conn, rid: None)
+    r = say(a, "avunu")
+    assert r.reply.startswith("The booking was not made.") and "Confirmed" not in r.reply and "VG-" not in r.reply
+    assert [x[0] for x in connect(db_path).execute("SELECT status FROM bookings")] == ["failed"]
+
+
+def test_repu_uses_clinic_timezone(db_path, monkeypatch):
+    """At 20:00 UTC on 28 Oct it is already 01:30 on 29 Oct in Asia/Kolkata, so 'repu' = 30 Oct."""
+    from datetime import datetime, timezone
+
+    import booking.service as service_module
+
+    class FakeDateTime(datetime):
+        @classmethod
+        def now(cls, tz=None):
+            utc = datetime(2026, 10, 28, 20, 0, tzinfo=timezone.utc)
+            return utc.astimezone(tz) if tz else utc.replace(tzinfo=None)
+
+    monkeypatch.setattr(service_module, "datetime", FakeDateTime)
+    a = build_text_agent(db_path, service=service_module.BookingService(db_path))  # default, timezone-aware clock
+    say(a, "naa peru Bob, repu 10am consultation, 9000000001")
+    assert a.slots["date"] == "2026-10-30"

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 from datetime import date, datetime, time
 from enum import StrEnum
 from pathlib import Path
@@ -33,6 +34,7 @@ class ErrorCode(StrEnum):
     VERIFY_FAILED = "VERIFY_FAILED"
     VERIFY_LOCKED = "VERIFY_LOCKED"
     NOT_ACTIVE = "NOT_ACTIVE"
+    AMBIGUOUS_SERVICE = "AMBIGUOUS_SERVICE"
     AMBIGUOUS_TIME = "AMBIGUOUS_TIME"
     AMBIGUOUS_DATE = "AMBIGUOUS_DATE"
 
@@ -50,7 +52,16 @@ class BusinessConfig(BaseModel):
     booking_window_days: int = Field(gt=0)
     hours: dict[str, tuple[time, time] | None]
     services: dict[str, ServiceConfig]
+    ambiguous_aliases: dict[str, list[str]] = {}  # word -> the service keys it could mean
     faq: dict[str, str] = {}
+
+    def service_options(self, text: str) -> list[str]:
+        """Service keys an ambiguous word in `text` could mean (empty if none)."""
+        t = text.lower()
+        for word, keys in self.ambiguous_aliases.items():
+            if re.search(rf"\b{re.escape(word)}\b", t):
+                return list(keys)
+        return []
 
     def hours_for(self, d: date) -> tuple[time, time] | None:
         return self.hours.get(WEEKDAYS[d.weekday()])

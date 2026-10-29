@@ -4,8 +4,11 @@ Every function tool below is a thin wrapper that sends the call through the Trus
 only ever receives the gate's filtered result. Business logic lives in agent/tools.py and booking/.
 
 Run (needs LIVEKIT_* and GOOGLE_API_KEY in .env):
-    python -m agent.agent console     # talk in the terminal
-    python -m agent.agent dev         # connect to your LiveKit project
+    python -m agent.agent dev         # voice worker for browser calls from the dashboard (Voice call page)
+    python -m agent.agent console     # talk in the terminal (GOOGLE_API_KEY only)
+
+The worker registers as AGENT_NAME and is dispatched explicitly by the caller token that the API mints
+(api/voice.py), so it only joins rooms created for a dashboard voice call.
 """
 
 from __future__ import annotations
@@ -18,6 +21,7 @@ from livekit import agents
 from livekit.agents import Agent, AgentServer, AgentSession, RunContext, function_tool
 from livekit.plugins import google
 
+from agent.llm_loop import credential_set
 from agent.prompts import GREETING_INSTRUCTIONS, build_instructions
 from agent.tools import build_gate
 from booking.db import default_db_path
@@ -27,6 +31,15 @@ from gate.tiers import CallContext, Channel, Tier
 
 load_dotenv()
 log = logging.getLogger("voicegate.agent")
+
+AGENT_NAME = "voicegate"
+LIVEKIT_VARS = ("LIVEKIT_URL", "LIVEKIT_API_KEY", "LIVEKIT_API_SECRET")
+
+
+def missing_worker_config(command: str) -> list[str]:
+    """Env vars the worker needs for `command` that are unset or still .env.example placeholders."""
+    needed = ("GOOGLE_API_KEY",) if command == "console" else (*LIVEKIT_VARS, "GOOGLE_API_KEY")
+    return [k for k in needed if not credential_set(k)]
 
 
 class VoiceGateAgent(Agent):
@@ -201,11 +214,16 @@ def _shared() -> tuple[BookingService, TrustGate]:
     return _service, _gate
 
 
-@server.rtc_session(agent_name="voicegate")
+def new_call_context(room_name: str) -> CallContext:
+    """Every voice call starts as a PUBLIC caller on the VOICE channel. Nothing from the browser, the token or
+    the model can change this; only verify_booking (code + last 4 digits) can raise it to CUSTOMER."""
+    return CallContext(session_id=room_name, tier=Tier.PUBLIC, channel=Channel.VOICE)
+
+
+@server.rtc_session(agent_name=AGENT_NAME)
 async def entrypoint(ctx: agents.JobContext) -> None:
     service, gate = _shared()
-    # Voice callers are always public in Phase 1. The tier is set here in code, never by the model.
-    call = CallContext(session_id=ctx.room.name, tier=Tier.PUBLIC, channel=Channel.VOICE)
+    call = new_call_context(ctx.room.name)
     instructions = build_instructions(service.config, service.now().date())
 
     session = AgentSession(llm=google.realtime.RealtimeModel(voice="Puck", temperature=0.6))
@@ -221,4 +239,12 @@ async def entrypoint(ctx: agents.JobContext) -> None:
 
 
 if __name__ == "__main__":
+    import sys
+
+    command = next((a for a in sys.argv[1:] if not a.startswith("-")), "")
+    if command in ("dev", "start", "connect", "console") and (missing := missing_worker_config(command)):
+        sys.exit(
+            "VoiceGate voice worker cannot start: set these in .env (real values, not the .env.example "
+            f"placeholders): {', '.join(missing)}"
+        )
     agents.cli.run_app(server)

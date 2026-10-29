@@ -59,6 +59,7 @@ PARTS_OF_DAY: dict[str, str] = {
     "madhyanam": "afternoon", "madhyaanam": "afternoon", "madhyahnam": "afternoon",
     "evening": "evening", "shaam": "evening", "sham": "evening", "saam": "evening",
     "sayantram": "evening", "saayantram": "evening", "sayantharam": "evening", "sayankalam": "evening",
+    "sayantaram": "evening", "sayanthram": "evening", "saayantaram": "evening", "saayankalam": "evening",
     "night": "night", "raat": "night", "raatri": "night", "ratri": "night", "rathri": "night",
 }
 
@@ -86,6 +87,7 @@ class Normalized:
     part_of_day: str | None = None
     issues: list[str] = field(default_factory=list)
     candidates: list[time] = field(default_factory=list)  # the options, when issues has ambiguous_time
+    service_options: list[str] = field(default_factory=list)  # the options, when issues has ambiguous_service
 
 
 def _num(token: str) -> int:
@@ -241,10 +243,14 @@ def extract_time(t: str, part: str | None, issues: list[str]) -> time | None:
     return distinct[0] if distinct else None
 
 
+# Telugu "evening" is spelled many ways by callers and ASR: sayantram, sayantaram, sayanthram, saayantharam...
+SAYANTRAM_RE = re.compile(r"^saa?yan(?:t|th)h?a?ram$")
+
+
 def extract_part_of_day(t: str, issues: list[str]) -> str | None:
     found = []
     for word in t.split():
-        p = PARTS_OF_DAY.get(word)
+        p = PARTS_OF_DAY.get(word) or ("evening" if SAYANTRAM_RE.match(word) else None)
         if p and p not in found:
             found.append(p)
     if len(found) > 1:
@@ -284,7 +290,11 @@ def normalize(text: str, today: date, cfg: BusinessConfig | None = None) -> Norm
     if tm is None and part and "ambiguous_time" not in issues and "invalid_time" not in issues:
         issues.append("needs_hour")
     service = match_service(t, cfg) if cfg else None
-    return Normalized(date=d, time=tm, service=service, part_of_day=part, issues=issues, candidates=candidates)
+    service_options: list[str] = []
+    if cfg and service is None and (service_options := cfg.service_options(t)):
+        issues.append("ambiguous_service")  # e.g. "chinna checkup": ask, don't pick
+    return Normalized(date=d, time=tm, service=service, part_of_day=part, issues=issues, candidates=candidates,
+                      service_options=service_options)
 
 
 def coerce_date(value: str, today: date) -> str:

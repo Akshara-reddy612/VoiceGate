@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import os
 from typing import Any, Literal
 
 from fastapi import APIRouter, Depends, HTTPException, Request
@@ -11,7 +10,8 @@ from pydantic import BaseModel, Field
 
 from api.auth import OwnerAuth
 from api.simulate import SimulationError, Simulator
-from agent.llm_loop import gemini_configured
+from api.voice import create_caller_token, voice_status
+from agent.llm_loop import credential_set, gemini_configured
 from gate.gate import TrustGate
 from gate.tiers import CallContext, Channel, Tier
 
@@ -51,7 +51,7 @@ def build_router(auth: OwnerAuth, gate: TrustGate, simulator: Simulator) -> APIR
             "status": "ok",
             "login_configured": auth.configured,
             "gemini_configured": gemini_configured(),
-            "livekit_configured": all(os.environ.get(k) for k in ("LIVEKIT_URL", "LIVEKIT_API_KEY", "LIVEKIT_API_SECRET")),
+            "livekit_configured": all(credential_set(k) for k in ("LIVEKIT_URL", "LIVEKIT_API_KEY", "LIVEKIT_API_SECRET")),
         }
 
     @r.post("/login")
@@ -98,6 +98,21 @@ def build_router(auth: OwnerAuth, gate: TrustGate, simulator: Simulator) -> APIR
     async def metrics(ctx: CallContext = Depends(owner)):
         return await through_gate(ctx, "get_metrics")
 
+    @r.get("/voice/status")
+    async def voice_status_route(ctx: CallContext = Depends(owner)):
+        return voice_status()
+
+    @r.post("/voice/token")
+    async def voice_token(ctx: CallContext = Depends(owner)):
+        status = voice_status()
+        if status["missing"]:
+            raise HTTPException(
+                503,
+                "Voice calling is not configured. Set these in .env and restart the API and the voice worker: "
+                + ", ".join(status["missing"]),
+            )
+        return create_caller_token()
+
     @r.get("/attacks")
     async def attacks(ctx: CallContext = Depends(owner)):
         return simulator.attacks()
@@ -116,6 +131,6 @@ def build_router(auth: OwnerAuth, gate: TrustGate, simulator: Simulator) -> APIR
                 raise HTTPException(400, "Say something.")
             return await simulator.chat(body.mode, body.text, body.session_id)
         except SimulationError as e:
-            raise HTTPException(e.status, e.message) from e
+            raise HTTPException(e.status, e.detail()) from e
 
     return r

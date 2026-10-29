@@ -21,7 +21,7 @@ from pathlib import Path
 from typing import Any
 
 from agent.normalizer import NEXT_WEEK_RE as NEXT_WEEK_WORDS
-from agent.normalizer import normalize
+from agent.normalizer import PARTS_OF_DAY, RELATIVE_DAYS, WEEKDAY_WORDS, normalize
 from agent.llm_loop import ChatModel, Conversation, ExecResult, ToolCallRecord, run_turn
 from agent.prompts import build_instructions
 from agent.tools import build_gate
@@ -47,7 +47,18 @@ NAME_STOPWORDS = {
     "and", "my", "phone", "number", "want", "to", "for", "at", "on", "the", "a", "an", "calling", "looking",
     "here", "booking", "free", "available", "not", "owner", "owners", "owner's", "wife", "husband", "doctor",
     "from", "with", "booked", "trying", "going", "interested", "admin", "manager", "staff",
-}
+    # Telugu/Hindi fillers that follow a name: "naa peru Bob andi", "mera naam Bob hai"
+    "andi", "garu", "hai", "hoon", "ji", "kavali", "chahiye", "appointment", "ki", "ku", "ko", "baje", "today", "tomorrow",
+} | set(RELATIVE_DAYS) | set(WEEKDAY_WORDS) | (set(PARTS_OF_DAY) - {"sham", "saam"})  # Sham/Saam are also names
+# Name phrases: English, Telugu ("naa peru"), Hindi ("mera naam").
+NAME_RE = re.compile(
+    r"\b(?:my name is|my name's|name is|this is|i am|i'm|im|naa? peru|naa? paeru|mera naam|mera name)\s+(?:is\s+)?"
+    r"([a-z][a-z.'\- ]*)",
+    re.IGNORECASE,
+)
+# Clock ranges used to offer slots when the caller gives only a part of the day.
+PART_RANGES = {"morning": ("00:00", "12:00"), "afternoon": ("12:00", "16:00"),
+               "evening": ("16:00", "24:00"), "night": ("19:00", "24:00")}
 AVAILABILITY_WORDS = re.compile(r"\b(free|available|availability|slots?|open)\b")
 BOOK_WORDS = re.compile(r"\b(book|booking|appointment|schedule|reserve)\b")
 FAQ_TOPICS = {
@@ -153,7 +164,7 @@ def _clean_name(words: list[str]) -> str | None:
 
 
 def extract_name(text: str, bare_ok: bool = False) -> str | None:
-    m = re.search(r"\b(?:my name is|name is|this is|i am|i'm|im)\s+([a-z][a-z.'\- ]*)", text, re.IGNORECASE)
+    m = NAME_RE.search(text)
     if m:
         return _clean_name(m[1].split()[:3])
     if bare_ok and re.fullmatch(r"\s*[A-Za-z][A-Za-z.'-]*(?:\s+[A-Za-z][A-Za-z.'-]*){0,2}\s*", text):
@@ -206,6 +217,7 @@ class TextAgent:
         self.time_unclear = False  # caller offered several times ("5 or 6"): ask which one
         self.time_options: list[time] = []
         self.next_week_pending = False  # caller said "next week" without a day
+        self.service_options: list[str] = []  # caller said an ambiguous service word ("checkup"): ask which
         # customer flow
         self.creds: dict[str, str] = {}  # code / phone_last4 as given by the caller
         self.verified: dict[str, Any] | None = None  # caller's own booking, from verify_booking
@@ -255,6 +267,9 @@ class TextAgent:
         today = self.service.now().date()
         if self.next_week_pending and not NEXT_WEEK_WORDS.search(rest.lower()):
             rest = "next week " + rest  # caller is answering "which day next week?"
+        if (self.part_hint and self.asked == "time" and re.search(r"\d", rest)
+                and not re.search(r"\b[ap]\.?m\b", rest.lower()) and normalize(rest, today).part_of_day is None):
+            rest = f"{self.part_hint} {rest}"  # "5" after "evening" means 5 PM
         n = normalize(rest, today, self.cfg)
         unclear = False
         if "needs_day" in n.issues:
@@ -270,10 +285,15 @@ class TextAgent:
         elif t := n.time or extract_time(rest, bare_number_ok=self.asked == "time"):
             found["time"] = t.strftime("%H:%M")
             self.time_unclear, self.time_options = False, []
-        if "time" not in found and "needs_hour" in n.issues:
-            self.part_hint = n.part_of_day
-        if s := n.service or extract_service(rest, self.cfg):
+        if "time" not in found and n.part_of_day:
+            self.part_hint = n.part_of_day  # remembered across turns; slots in this range are offered later
+        s = n.service or extract_service(rest, self.cfg) or self._pick_service_option(rest)
+        if s:
             found["service"] = s
+            self.service_options = []
+        elif n.service_options:
+            # "chinna checkup": could be a consultation or a full body checkup -> ask, never pick
+            self.service_options, unclear = n.service_options, True
         if n := extract_name(rest, bare_ok=self.asked == "name" and not found):
             found["name"] = n
         self.slots.update(found)
@@ -321,16 +341,62 @@ class TextAgent:
         more = f" and {len(starts) - 4} more" if len(starts) > 4 else ""
         return f"On {day} we have {shown}{more}. Which time would you like?"
 
+    def _pick_service_option(self, text: str) -> str | None:
+        """Answer to "Do you mean A or B?": a distinctive word of one label ("general", "full body") or first/second."""
+        if not self.service_options:
+            return None
+        words = set(re.findall(r"[a-z0-9]+", text.lower()))
+        ordinals = [{"1", "first", "one", "modatidi", "pehla", "pehli"}, {"2", "second", "two", "rendodi", "dusra", "doosra"}]
+        shared = set.intersection(*(set(self.cfg.services[k].label.lower().split()) for k in self.service_options))
+        hits = []
+        for i, key in enumerate(self.service_options):
+            distinctive = set(self.cfg.services[key].label.lower().split()) - shared - {"checkup", "check", "up"}
+            if words & (distinctive | (ordinals[i] if i < len(ordinals) else set())):
+                hits.append(key)
+        return hits[0] if len(hits) == 1 else None
+
+    async def _offer_part_of_day(self) -> str:
+        """Caller gave a part of the day ("repu evening"): list the free starts in it and let them choose."""
+        args = {"date": self.slots["date"]}
+        if "service" in self.slots:
+            args["service"] = self.slots["service"]
+        r = await self.call_tool("get_availability", args)
+        if r.get("status") != "ok":
+            err = r.get("error") or {}
+            self._forget_for(err.get("code", ""))
+            return (err.get("message") or r.get("message", "")) + " Which other day would suit you?"
+        lo, hi = PART_RANGES.get(self.part_hint, ("00:00", "24:00"))
+        starts = [s["start"] for s in r.get("slots", [])]
+        in_part = [s for s in starts if lo <= s < hi]
+        day = _speak_date(r["date"])
+        if in_part:
+            shown = ", ".join(_speak_time(s) for s in in_part[:6])
+            return f"In the {self.part_hint} on {day} we have {shown}. Which time would you like?"
+        if starts:
+            nearest = starts[:4] if self.part_hint == "morning" else starts[-4:]
+            shown = ", ".join(_speak_time(s) for s in nearest)
+            return f"Sorry, there are no {self.part_hint} slots on {day}. The closest free times are {shown}. Would one of those work?"
+        return f"Sorry, {day} is fully booked. Would another day work?"
+
     async def _next_step(self) -> str:
         missing = [f for f in FIELDS if f not in self.slots]
         if missing:
-            self.asked = missing[0]
+            asked_before, self.asked = self.asked, missing[0]
+            if missing[0] == "service":
+                labels = [s.label for s in self.cfg.services.values()]
+                if self.service_options:
+                    options = " or ".join(self.cfg.services[k].label for k in self.service_options)
+                    return f"Do you mean {options}?"
+                if asked_before == "service":  # last answer wasn't a service we offer: don't just repeat
+                    return f"Sorry, I didn't catch the service. Please choose {', '.join(labels[:-1])} or {labels[-1]}."
             if missing[0] == "date" and self.next_week_pending:
                 return "Which day next week would you like?"
+            if missing[0] == "time" and self.time_unclear and len(self.time_options) > 1:
+                options = " or ".join(_speak_time(t.strftime("%H:%M")) for t in self.time_options)
+                return f"Did you mean {options}? Please pick one."
+            if missing[0] == "time" and self.part_hint and "date" in self.slots:
+                return await self._offer_part_of_day()  # never guess an exact time from "evening"
             if missing[0] == "time" and self.time_unclear:
-                if len(self.time_options) > 1:
-                    options = " or ".join(_speak_time(t.strftime("%H:%M")) for t in self.time_options)
-                    return f"Did you mean {options}? Please pick one."
                 return "Please tell me one exact time."
             if missing[0] == "time" and self.part_hint:
                 return f"What time in the {self.part_hint}?"

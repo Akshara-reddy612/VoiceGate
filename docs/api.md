@@ -22,6 +22,8 @@ The API is FastAPI, served by `uvicorn api.main:app --port 8000`. It runs on loc
 | `GET /api/metrics` | owner | The latest result for each eval suite, from `eval_runs`, with `mode` set to `offline` or `live_gemini`. Returns `{available:false}` before any run. |
 | `GET /api/attacks` | owner | The 30 red-team attacks as `[{id, category, turns}]`. |
 | `POST /api/simulate` | owner | See the next section. |
+| `GET /api/voice/status` | owner | `{livekit_configured, gemini_configured, missing:[variable names], worker_command}`. It returns names only, never values. |
+| `POST /api/voice/token` | owner | Starts a browser voice call. Returns `{url, token, room, identity, expires_in_seconds}`. See below. |
 
 **Login errors:**
 - **503:** `OWNER_PASSWORD` is unset, or still a placeholder such as `change-me`.
@@ -29,6 +31,27 @@ The API is FastAPI, served by `uvicorn api.main:app --port 8000`. It runs on loc
 - **429:** 5 failures within one minute from one client.
 
 **Owner reads aren't audited:** reads from `bookings`, `events`, `availability` and `metrics` are **not** written to the audit log, because the dashboard polls them. Any blocked attempt is always written.
+
+## POST /api/voice/token
+
+This mints a LiveKit token for **one new room** (`vg-call-…`). It expires after **10 minutes**.
+
+**What the token allows:**
+- Join that one room.
+- Publish the **microphone only**.
+- Subscribe, so the caller can hear the agent.
+
+**What it doesn't allow:** publishing data, or any admin, create, list or record rights. It carries no metadata.
+
+**Room configuration:**
+- Allows at most 2 participants: the caller and the agent.
+- Dispatches the `voicegate` agent. LiveKit only dispatches from a token when the room is first created, which is why every call gets a fresh room.
+
+**Secrets stay on the server.** `LIVEKIT_API_SECRET` and `GOOGLE_API_KEY` never reach the browser.
+
+**Errors:** if a LiveKit variable or `GOOGLE_API_KEY` is missing or still a `.env.example` placeholder, the endpoint returns 503 with the variable names.
+
+**The token can't set the caller's tier.** The voice worker always starts the call as a public caller on the voice channel, and every tool call goes through the Trust Gate.
 
 ## POST /api/simulate
 

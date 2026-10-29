@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { api } from "../api.js";
+import { api, isProviderError, PROVIDER_TITLE } from "../api.js";
 import ToolTrace from "./ToolTrace.jsx";
 
 const EXAMPLES = [
@@ -18,7 +18,10 @@ export default function CallerTest({ health }) {
   const [error, setError] = useState("");
   const end = useRef(null);
 
-  useEffect(() => end.current?.scrollIntoView({ block: "end" }), [messages]);
+  useEffect(() => {
+    // Braces matter: newer browsers return a value from scrollIntoView, and React would call it as a cleanup.
+    end.current?.scrollIntoView({ block: "end" });
+  }, [messages]);
 
   const send = async (value) => {
     const say = (value ?? text).trim();
@@ -36,7 +39,7 @@ export default function CallerTest({ health }) {
       setBrain(r.brain);
       setMessages((m) => [...m, { role: "agent", text: r.reply, calls: r.tool_calls }]);
     } catch (e) {
-      setError(e.message);
+      setError(isProviderError(e) ? `${PROVIDER_TITLE[e.kind]}: ${e.message}` : e.message);
     } finally {
       setBusy(false);
     }
